@@ -136,7 +136,6 @@ const IdentityGenerator = () => {
     
     if (nationality === 'taiwan') {
       // 台灣用戶名使用拼音或英文
-      const englishName = name.replace(/[\u4e00-\u9fa5]/g, '') // 移除中文字符
       username = `user${randomNum}`
     } else {
       // 美國用戶名使用名字
@@ -193,7 +192,7 @@ const IdentityGenerator = () => {
       : (gender === 'male' ? 'Male' : 'Female')
     
     // 姓名
-    const firstName = randomChoice(data.firstNames[gender])
+    const firstName = randomChoice(data.firstNames[gender as keyof typeof data.firstNames])
     const lastName = randomChoice(data.lastNames)
     const name = nationality === 'taiwan' ? lastName + firstName : `${firstName} ${lastName}`
     

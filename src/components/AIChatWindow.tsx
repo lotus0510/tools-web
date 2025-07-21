@@ -389,10 +389,9 @@ const AIChatWindow = () => {
           </div>
           <div className="chat-actions">
             <button 
-              className="action-btn logs-btn"
+              className={`action-btn logs-btn ${showLogs ? 'active' : ''}`}
               onClick={() => setShowLogs(!showLogs)}
               title={showLogs ? "隱藏日誌" : "顯示日誌"}
-              className={`action-btn logs-btn ${showLogs ? 'active' : ''}`}
             >
               📋
             </button>

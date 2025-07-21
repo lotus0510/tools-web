@@ -6,7 +6,7 @@ interface NewsArticle {
   title: string
   description: string
   url: string
-  urlToImage: string
+  urlToImage: string | null
   publishedAt: string
   source: {
     name: string
@@ -67,7 +67,7 @@ const NewsReader = () => {
   }
 
   // Google RSS URL 生成器
-  const generateGoogleNewsURL = (country: string, category: string, query: string = '') => {
+  const generateGoogleNewsURL = (country: string, _category: string, query: string = '') => {
     const baseURL = 'https://news.google.com/rss'
     const languageMap: Record<string, string> = {
       'tw': 'zh-TW',
@@ -247,7 +247,7 @@ const NewsReader = () => {
         setLoading(false)
         return
       } catch (error) {
-        if (error.name === 'AbortError') {
+        if (error instanceof Error && error.name === 'AbortError') {
           addLog(`Proxy ${proxy} timeout after 10 seconds`)
         } else {
           addLog(`Proxy ${proxy} failed: ${error}`)

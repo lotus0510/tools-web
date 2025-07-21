@@ -144,7 +144,7 @@ const MemoryCardGame = () => {
 
   // 計算當前時間
   useEffect(() => {
-    let interval: NodeJS.Timeout
+    let interval: number
     if (gameStatus === 'playing') {
       interval = setInterval(() => {
         setStats(prev => ({
