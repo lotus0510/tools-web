@@ -1,0 +1,144 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* 顏色變量 - 深色主題 */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --bg-hover: #3d3d3d;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --border-color: #404040;
+  --accent-color: #646cff;
+  --accent-hover: #535bf2;
+  
+  /* 主要顏色 */
+  --primary-color: #646cff;
+  --primary-hover: #535bf2;
+  
+  /* 狀態顏色 */
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --success-bg: #d4edda;
+  --success-border: #c3e6cb;
+  
+  --warning-color: #ffc107;
+  --warning-hover: #e0a800;
+  --warning-bg: #fff3cd;
+  --warning-border: #ffeaa7;
+  
+  --danger-color: #dc3545;
+  --danger-hover: #c82333;
+  --danger-bg: #f8d7da;
+  --danger-border: #f5c6cb;
+
+  color-scheme: light dark;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* 淺色主題 */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    --bg-hover: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --accent-color: #0d6efd;
+    --accent-hover: #0b5ed7;
+    
+    /* 主要顏色 */
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+    
+    /* 狀態顏色 */
+    --success-color: #198754;
+    --success-hover: #157347;
+    --success-bg: #d1e7dd;
+    --success-border: #badbcc;
+    
+    --warning-color: #fd7e14;
+    --warning-hover: #e8690b;
+    --warning-bg: #fff3cd;
+    --warning-border: #ffecb5;
+    
+    --danger-color: #dc3545;
+    --danger-hover: #bb2d3b;
+    --danger-bg: #f8d7da;
+    --danger-border: #f5c2c7;
+    
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+  }
+  
+  a:hover {
+    color: var(--accent-hover);
+  }
+  
+  button {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+}
+
+/* 全局樣式重置 */
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+}
