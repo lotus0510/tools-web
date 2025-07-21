@@ -11,7 +11,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
-  "homepage": "https://yourusername.github.io/toos-web",
+  "homepage": "https://lotus0510.github.io/tools-web",
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
