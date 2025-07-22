@@ -243,6 +243,28 @@ const AIChatWindow = () => {
       return
     }
 
+    // 特別檢查：付費模型必須使用用戶自己配置的 API Key
+    if (selectedModel && !selectedModel.isFree) {
+      const userApiKey = localStorage.getItem('openrouter_api_key')
+      const envApiKey = import.meta.env.VITE_AI_API_KEY
+      
+      // 如果當前使用的是環境變數的 API Key，不允許使用付費模型
+      if (settings.apiKey === envApiKey && !userApiKey) {
+        setError('付費模型需要您自己的 API Key。請在設置中輸入您的 OpenRouter API Key，或選擇免費模型。')
+        setShowSettings(true)
+        addLog('Blocked paid model usage with default API key')
+        return
+      }
+      
+      // 如果用戶有自己的 API Key，但當前使用的是環境變數的，提醒切換
+      if (settings.apiKey === envApiKey && userApiKey) {
+        setError('檢測到您有自己的 API Key。使用付費模型時將使用您的 API Key。')
+        // 自動切換到用戶的 API Key
+        setSettings(prev => ({ ...prev, apiKey: userApiKey }))
+        addLog('Switched to user API key for paid model')
+      }
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
