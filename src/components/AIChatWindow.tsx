@@ -80,12 +80,26 @@ const AIChatWindow = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [settings, setSettings] = useState<ChatSettings>({
-    apiKey: localStorage.getItem('openrouter_api_key') || import.meta.env.VITE_AI_API_KEY || '',
-    model: 'deepseek/deepseek-chat-v3-0324:free',
-    temperature: 0.7,
-    maxTokens: 2000,
-    isDefaultApiKey: !localStorage.getItem('openrouter_api_key') && !!import.meta.env.VITE_AI_API_KEY
+  const [settings, setSettings] = useState<ChatSettings>(() => {
+    const userApiKey = localStorage.getItem('openrouter_api_key')
+    const envApiKey = import.meta.env.VITE_AI_API_KEY
+    const currentApiKey = userApiKey || envApiKey || ''
+    const isDefault = currentApiKey === envApiKey && !!envApiKey
+    
+    // 🔍 調試信息
+    console.log('🔑 API Key 初始化調試:')
+    console.log('- userApiKey:', userApiKey ? `${userApiKey.substring(0, 10)}...` : 'null')
+    console.log('- envApiKey:', envApiKey ? `${envApiKey.substring(0, 10)}...` : 'null')
+    console.log('- currentApiKey:', currentApiKey ? `${currentApiKey.substring(0, 10)}...` : 'null')
+    console.log('- isDefaultApiKey:', isDefault)
+    
+    return {
+      apiKey: currentApiKey,
+      model: 'deepseek/deepseek-chat-v3-0324:free',
+      temperature: 0.7,
+      maxTokens: 2000,
+      isDefaultApiKey: isDefault
+    }
   })
   const [showSettings, setShowSettings] = useState(false)
   const [error, setError] = useState('')
@@ -118,6 +132,15 @@ const AIChatWindow = () => {
 
   // 保存設置到本地存儲
   const saveSettings = () => {
+    const envApiKey = import.meta.env.VITE_AI_API_KEY
+    const isStillDefault = settings.apiKey === envApiKey && !!envApiKey
+    
+    // 🔍 調試信息
+    console.log('💾 保存設置調試:')
+    console.log('- 保存的 apiKey:', settings.apiKey ? `${settings.apiKey.substring(0, 10)}...` : 'null')
+    console.log('- envApiKey:', envApiKey ? `${envApiKey.substring(0, 10)}...` : 'null')
+    console.log('- isStillDefault:', isStillDefault)
+    
     localStorage.setItem('openrouter_api_key', settings.apiKey)
     localStorage.setItem('openrouter_model', settings.model)
     localStorage.setItem('openrouter_temperature', settings.temperature.toString())
@@ -126,7 +149,7 @@ const AIChatWindow = () => {
     // 更新 API Key 來源標記
     setSettings(prev => ({ 
       ...prev, 
-      isDefaultApiKey: false  // 用戶手動設置後就不是預設的了
+      isDefaultApiKey: isStillDefault  // 根據實際情況判斷
     }))
     
     setShowSettings(false)
@@ -146,11 +169,8 @@ const AIChatWindow = () => {
       maxTokens: savedMaxTokens ? parseInt(savedMaxTokens) : prev.maxTokens
     }))
     
-    // 自動保存環境變數中的 API Key
-    const envApiKey = import.meta.env.VITE_AI_API_KEY
-    if (!localStorage.getItem('openrouter_api_key') && envApiKey) {
-      localStorage.setItem('openrouter_api_key', envApiKey)
-    }
+    // 🚫 移除自動保存邏輯，避免環境變數被保存到 localStorage
+    console.log('⚙️ 設置加載完成，不自動保存環境變數到 localStorage')
   }, [])
 
   // 獲取系統信息
@@ -253,11 +273,28 @@ const AIChatWindow = () => {
     }
 
     // 🔒 硬性限制：預設 API Key 完全禁止使用付費模型
-    if (selectedModel && !selectedModel.isFree && settings.isDefaultApiKey) {
+    const envApiKey = import.meta.env.VITE_AI_API_KEY
+    const isUsingDefaultKey = settings.apiKey === envApiKey && !!envApiKey
+    
+    // 🔍 調試信息
+    console.log('🔒 付費模型安全檢查:')
+    console.log('- selectedModel:', selectedModel?.name)
+    console.log('- isFree:', selectedModel?.isFree)
+    console.log('- currentApiKey:', settings.apiKey ? `${settings.apiKey.substring(0, 10)}...` : 'null')
+    console.log('- envApiKey:', envApiKey ? `${envApiKey.substring(0, 10)}...` : 'null')
+    console.log('- isUsingDefaultKey:', isUsingDefaultKey)
+    console.log('- settings.isDefaultApiKey:', settings.isDefaultApiKey)
+    
+    if (selectedModel && !selectedModel.isFree && isUsingDefaultKey) {
+      console.log('🚫 BLOCKED: 預設 API Key 不能使用付費模型')
       setError('🚫 安全限制：預設 API Key 不允許使用付費模型。請在設置中輸入您自己的 OpenRouter API Key，或選擇免費模型。')
       setShowSettings(true)
       addLog('🔒 BLOCKED: Default API key cannot use paid models')
       return
+    }
+    
+    if (selectedModel && !selectedModel.isFree && !isUsingDefaultKey) {
+      console.log('✅ ALLOWED: 使用用戶自己的 API Key 調用付費模型')
     }
 
     const userMessage: Message = {
