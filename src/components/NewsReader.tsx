@@ -14,11 +14,6 @@ interface NewsArticle {
   author?: string
 }
 
-interface NewsResponse {
-  status: string
-  totalResults: number
-  articles: NewsArticle[]
-}
 
 const NewsReader = () => {
   const [articles, setArticles] = useState<NewsArticle[]>([])
@@ -273,145 +268,11 @@ const NewsReader = () => {
     throw new Error('All CORS proxies failed')
   }
 
-  // NewsAPI 獲取函數（後備方案）
-  const fetchNewsAPI = async (isSearch = false) => {
-    const apiKey = import.meta.env.VITE_NEWS_API_KEY
-    if (!apiKey) {
-      addLog('NewsAPI key not found, skipping NewsAPI fallback')
-      throw new Error('NewsAPI not available - no API key configured')
-    }
-
-    addLog(`Falling back to NewsAPI - Category: ${category}, Country: ${country}${isSearch ? `, Query: ${searchQuery}` : ''}`)
-    addLog('⚠️ Note: NewsAPI free plan has browser CORS restrictions')
-    
-    try {
-      let url: string
-      const baseUrl = 'https://newsapi.org/v2'
-      
-      if (isSearch && searchQuery.trim()) {
-        // 使用搜索端點，結合地區關鍵字
-        let searchTerm = searchQuery.trim()
-        
-        // 為特定地區添加地區關鍵字以提高相關性
-        if (country === 'tw') {
-          searchTerm = `${searchQuery} 台灣`
-        } else if (country === 'hk') {
-          searchTerm = `${searchQuery} 香港`
-        } else if (country === 'cn') {
-          searchTerm = `${searchQuery} 中國`
-        } else if (country === 'jp') {
-          searchTerm = `${searchQuery} 日本`
-        } else if (country === 'kr') {
-          searchTerm = `${searchQuery} 韓國`
-        }
-        
-        url = `${baseUrl}/everything?q=${encodeURIComponent(searchTerm)}&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`
-      } else {
-        // 對於台灣、香港等地區，使用everything端點搜索相關新聞
-        if (country === 'tw' || country === 'hk' || country === 'cn') {
-          const countryKeywords = {
-            'tw': '台灣 OR Taiwan',
-            'hk': '香港 OR Hong Kong', 
-            'cn': '中國 OR China'
-          }
-          const keyword = countryKeywords[country as keyof typeof countryKeywords]
-          url = `${baseUrl}/everything?q=${encodeURIComponent(keyword)}&language=zh&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`
-        } else {
-          // 使用頭條新聞端點
-          url = `${baseUrl}/top-headlines?country=${country}&category=${category}&pageSize=20&apiKey=${apiKey}`
-        }
-      }
-      
-      addLog(`Making API request to NewsAPI...`)
-      addLog(`⚠️ Warning: NewsAPI free plan blocks browser requests (CORS)`)
-      
-      // 嘗試使用 CORS 代理
-      const corsProxy = 'https://api.allorigins.win/get?url='
-      const proxiedUrl = corsProxy + encodeURIComponent(url)
-      
-      addLog(`Using CORS proxy for NewsAPI: ${corsProxy}`)
-      const response = await fetch(proxiedUrl)
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(`API Error: ${response.status} - ${errorData.message || response.statusText}`)
-      }
-      
-      const responseData = await response.json()
-      // 如果使用了 CORS 代理，需要解析 contents 字段
-      const data: NewsResponse = responseData.contents ? JSON.parse(responseData.contents) : responseData
-      
-      if (data.status !== 'ok') {
-        throw new Error(`API returned error status: ${data.status}`)
-      }
-      
-      // 為每篇文章添加唯一ID（如果沒有的話）並過濾掉無效文章
-      const articlesWithId = data.articles
-        .filter(article => article.title && article.title !== '[Removed]')
-        .map((article, index) => ({
-          ...article,
-          id: article.url || `article-${index}-${Date.now()}`,
-          urlToImage: article.urlToImage || null,
-          description: article.description || '暫無描述'
-        }))
-      
-      setArticles(articlesWithId)
-      addLog(`Successfully fetched ${articlesWithId.length} articles`)
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '獲取新聞時發生未知錯誤'
-      setError(`獲取新聞失敗: ${errorMessage}`)
-      addLog(`Error: ${errorMessage}`)
-      
-      // 如果API失敗，顯示一些示例文章作為後備
-      addLog('Falling back to sample articles due to API error')
-      const fallbackArticles: NewsArticle[] = [
-        {
-          id: 'fallback-1',
-          title: '科技巨頭發布最新AI技術突破',
-          description: '人工智慧領域再次迎來重大突破，新技術將改變我們的生活方式。專家預測這項技術將在未來五年內廣泛應用。',
-          url: 'https://newsapi.org/',
-          urlToImage: null,
-          publishedAt: new Date().toISOString(),
-          source: { name: 'TechNews' },
-          author: '科技記者'
-        },
-        {
-          id: 'fallback-2',
-          title: '全球經濟市場最新動態分析',
-          description: '專家分析當前經濟形勢，預測未來發展趨勢。市場波動中蘊含新的投資機會。',
-          url: 'https://newsapi.org/',
-          urlToImage: null,
-          publishedAt: new Date(Date.now() - 3600000).toISOString(),
-          source: { name: 'FinanceDaily' },
-          author: '財經分析師'
-        },
-        {
-          id: 'fallback-3',
-          title: '健康生活新趨勢：專家建議',
-          description: '醫學專家分享最新健康生活建議，幫助民眾維持身心健康。簡單的生活習慣改變帶來顯著效果。',
-          url: 'https://newsapi.org/',
-          urlToImage: null,
-          publishedAt: new Date(Date.now() - 7200000).toISOString(),
-          source: { name: 'HealthToday' },
-          author: '健康專家'
-        },
-        {
-          id: 'fallback-4',
-          title: '環保科技創新解決方案',
-          description: '新興環保技術為地球永續發展帶來希望。創新的綠色科技正在改變傳統產業模式。',
-          url: 'https://newsapi.org/',
-          urlToImage: null,
-          publishedAt: new Date(Date.now() - 10800000).toISOString(),
-          source: { name: 'EcoNews' },
-          author: '環保記者'
-        }
-      ]
-      setArticles(fallbackArticles)
-    } finally {
-      setLoading(false)
-    }
-  }
+  // NewsAPI 獲取函數（已停用 - 由於瀏覽器 CORS 限制）
+  // const fetchNewsAPI = async (isSearch = false) => {
+  //   // NewsAPI 免費版不支援瀏覽器直接請求，已停用此功能
+  //   // 改為直接使用 Google RSS + 示例文章的方案
+  // }
 
   // 搜尋新聞
   const handleSearch = () => {
