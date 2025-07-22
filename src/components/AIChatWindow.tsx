@@ -80,7 +80,7 @@ const AIChatWindow = () => {
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [settings, setSettings] = useState<ChatSettings>({
-    apiKey: localStorage.getItem('openrouter_api_key') || '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',
+    apiKey: localStorage.getItem('openrouter_api_key') || import.meta.env.VITE_AI_API_KEY || '',
     model: 'deepseek/deepseek-chat-v3-0324:free',
     temperature: 0.7,
     maxTokens: 2000
@@ -137,9 +137,10 @@ const AIChatWindow = () => {
       maxTokens: savedMaxTokens ? parseInt(savedMaxTokens) : prev.maxTokens
     }))
     
-    // 自動保存預設的 API Key
-    if (!localStorage.getItem('openrouter_api_key')) {
-      localStorage.setItem('openrouter_api_key', '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')
+    // 自動保存環境變數中的 API Key
+    const envApiKey = import.meta.env.VITE_AI_API_KEY
+    if (!localStorage.getItem('openrouter_api_key') && envApiKey) {
+      localStorage.setItem('openrouter_api_key', envApiKey)
     }
   }, [])
 
