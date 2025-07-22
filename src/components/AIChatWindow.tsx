@@ -94,15 +94,15 @@ const AIChatWindow = () => {
 
   // 可用的模型列表（使用 OpenRouter 實際支援的模型 ID）
   const availableModels = [
-    // 🆓 免費模型
-    { id: 'deepseek/deepseek-chat-v3-0324:free', name: '🥇 DeepSeek V3 0324 (免費推薦)', provider: 'DeepSeek' },
-    { id: 'deepseek/deepseek-r1:free', name: '🥈 DeepSeek R1 0528 (免費)', provider: 'DeepSeek' },
-    { id: 'moonshotai/kimi-k2:free', name: '🥉 MoonshotAI Kimi K2 (免費)', provider: 'MoonshotAI' },
+    // 🆓 免費模型（推薦使用）
+    { id: 'deepseek/deepseek-chat-v3-0324:free', name: '🥇 DeepSeek V3 0324 (免費推薦)', provider: 'DeepSeek', isFree: true },
+    { id: 'deepseek/deepseek-r1:free', name: '🥈 DeepSeek R1 (免費)', provider: 'DeepSeek', isFree: true },
+    { id: 'moonshotai/kimi-k2:free', name: '🥉 MoonshotAI Kimi K2 (免費)', provider: 'MoonshotAI', isFree: true },
     
-    // 💰 付費模型
-    { id: 'anthropic/claude-4-sonnet', name: '🏆 Claude Sonnet 4 (付費推薦)', provider: 'Anthropic' },
-    { id: 'google/gemini-2.0-flash-001', name: '⚡ Gemini 2.0 Flash (付費)', provider: 'Google' },
-    { id: 'nous/hermes-3-405b-instruct', name: '🧠 Nous Hermes 3 405B Instruct (付費)', provider: 'Nous Research' }
+    // 💰 付費模型（需要自己的 API Key 和餘額）
+    { id: 'anthropic/claude-4-sonnet', name: '🏆 Claude Sonnet 4 (付費 - 需要自己的 API Key)', provider: 'Anthropic', isFree: false },
+    { id: 'google/gemini-2.0-flash-001', name: '⚡ Gemini 2.0 Flash (付費 - 需要自己的 API Key)', provider: 'Google', isFree: false },
+    { id: 'nous/hermes-3-405b-instruct', name: '🧠 Nous Hermes 3 405B (付費 - 需要自己的 API Key)', provider: 'Nous Research', isFree: false }
   ]
 
   // 滾動到底部
@@ -220,8 +220,25 @@ const AIChatWindow = () => {
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return
     
+    // 先檢查是否選擇了付費模型（在檢查 API Key 之前）
+    const selectedModel = availableModels.find(model => model.id === settings.model)
+    if (selectedModel && !selectedModel.isFree) {
+      const confirmMessage = `您選擇的是付費模型「${selectedModel.name}」。\n\n⚠️ 注意：\n• 付費模型需要您自己的 OpenRouter API Key\n• 需要您的帳戶有足夠餘額\n• 使用會產生費用\n\n建議使用免費模型進行測試。\n\n確定要繼續使用付費模型嗎？`
+      
+      if (!confirm(confirmMessage)) {
+        addLog('User cancelled paid model usage')
+        return
+      }
+      addLog(`User confirmed usage of paid model: ${selectedModel.name}`)
+    }
+
+    // 然後檢查 API Key
     if (!settings.apiKey) {
-      setError('請先在設置中配置 OpenRouter API Key')
+      if (selectedModel && !selectedModel.isFree) {
+        setError('付費模型需要配置 OpenRouter API Key。請在設置中添加您的 API Key，或選擇免費模型。')
+      } else {
+        setError('請先在設置中配置 OpenRouter API Key')
+      }
       setShowSettings(true)
       return
     }
@@ -380,11 +397,20 @@ const AIChatWindow = () => {
                 }}
                 className="model-select-inline"
               >
-                {availableModels.map(model => (
-                  <option key={model.id} value={model.id}>
-                    {model.name}
-                  </option>
-                ))}
+                <optgroup label="🆓 免費模型（推薦）">
+                  {availableModels.filter(model => model.isFree).map(model => (
+                    <option key={model.id} value={model.id}>
+                      {model.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="💰 付費模型（需要自己的 API Key）">
+                  {availableModels.filter(model => !model.isFree).map(model => (
+                    <option key={model.id} value={model.id}>
+                      {model.name}
+                    </option>
+                  ))}
+                </optgroup>
               </select>
             </div>
             <span className="message-count">{messages.length} 條消息</span>
@@ -599,11 +625,20 @@ const AIChatWindow = () => {
                   onChange={(e) => setSettings(prev => ({ ...prev, model: e.target.value }))}
                   className="setting-select"
                 >
-                  {availableModels.map(model => (
-                    <option key={model.id} value={model.id}>
-                      {model.name} ({model.provider})
-                    </option>
-                  ))}
+                  <optgroup label="🆓 免費模型（推薦使用）">
+                    {availableModels.filter(model => model.isFree).map(model => (
+                      <option key={model.id} value={model.id}>
+                        {model.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="💰 付費模型（需要自己的 API Key 和餘額）">
+                    {availableModels.filter(model => !model.isFree).map(model => (
+                      <option key={model.id} value={model.id}>
+                        {model.name}
+                      </option>
+                    ))}
+                  </optgroup>
                 </select>
               </div>
 
