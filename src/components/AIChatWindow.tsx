@@ -73,6 +73,7 @@ interface ChatSettings {
   model: string
   temperature: number
   maxTokens: number
+  isDefaultApiKey: boolean  // 標記是否為預設 API Key
 }
 
 const AIChatWindow = () => {
@@ -83,7 +84,8 @@ const AIChatWindow = () => {
     apiKey: localStorage.getItem('openrouter_api_key') || import.meta.env.VITE_AI_API_KEY || '',
     model: 'deepseek/deepseek-chat-v3-0324:free',
     temperature: 0.7,
-    maxTokens: 2000
+    maxTokens: 2000,
+    isDefaultApiKey: !localStorage.getItem('openrouter_api_key') && !!import.meta.env.VITE_AI_API_KEY
   })
   const [showSettings, setShowSettings] = useState(false)
   const [error, setError] = useState('')
@@ -120,6 +122,13 @@ const AIChatWindow = () => {
     localStorage.setItem('openrouter_model', settings.model)
     localStorage.setItem('openrouter_temperature', settings.temperature.toString())
     localStorage.setItem('openrouter_max_tokens', settings.maxTokens.toString())
+    
+    // 更新 API Key 來源標記
+    setSettings(prev => ({ 
+      ...prev, 
+      isDefaultApiKey: false  // 用戶手動設置後就不是預設的了
+    }))
+    
     setShowSettings(false)
     setError('')
   }
@@ -243,26 +252,12 @@ const AIChatWindow = () => {
       return
     }
 
-    // 特別檢查：付費模型必須使用用戶自己配置的 API Key
-    if (selectedModel && !selectedModel.isFree) {
-      const userApiKey = localStorage.getItem('openrouter_api_key')
-      const envApiKey = import.meta.env.VITE_AI_API_KEY
-      
-      // 如果當前使用的是環境變數的 API Key，不允許使用付費模型
-      if (settings.apiKey === envApiKey && !userApiKey) {
-        setError('付費模型需要您自己的 API Key。請在設置中輸入您的 OpenRouter API Key，或選擇免費模型。')
-        setShowSettings(true)
-        addLog('Blocked paid model usage with default API key')
-        return
-      }
-      
-      // 如果用戶有自己的 API Key，但當前使用的是環境變數的，提醒切換
-      if (settings.apiKey === envApiKey && userApiKey) {
-        setError('檢測到您有自己的 API Key。使用付費模型時將使用您的 API Key。')
-        // 自動切換到用戶的 API Key
-        setSettings(prev => ({ ...prev, apiKey: userApiKey }))
-        addLog('Switched to user API key for paid model')
-      }
+    // 🔒 硬性限制：預設 API Key 完全禁止使用付費模型
+    if (selectedModel && !selectedModel.isFree && settings.isDefaultApiKey) {
+      setError('🚫 安全限制：預設 API Key 不允許使用付費模型。請在設置中輸入您自己的 OpenRouter API Key，或選擇免費模型。')
+      setShowSettings(true)
+      addLog('🔒 BLOCKED: Default API key cannot use paid models')
+      return
     }
 
     const userMessage: Message = {
