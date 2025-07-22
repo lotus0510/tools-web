@@ -1,7 +1,51 @@
 import { useState } from 'react'
 import './IdentityGenerator.css'
 
-// 身份信息接口
+// 台灣城市資料
+const taiwanCities = {
+  '台北市': ['中正區', '大同區', '中山區', '松山區', '大安區', '萬華區', '信義區', '士林區', '北投區', '內湖區', '南港區', '文山區'],
+  '新北市': ['板橋區', '三重區', '中和區', '永和區', '新莊區', '新店區', '樹林區', '鶯歌區', '三峽區', '淡水區', '汐止區', '瑞芳區'],
+  '桃園市': ['桃園區', '中壢區', '大溪區', '楊梅區', '蘆竹區', '大園區', '龜山區', '八德區', '龍潭區', '平鎮區', '新屋區', '觀音區'],
+  '台中市': ['中區', '東區', '南區', '西區', '北區', '北屯區', '西屯區', '南屯區', '太平區', '大里區', '霧峰區', '烏日區'],
+  '台南市': ['中西區', '東區', '南區', '北區', '安平區', '安南區', '永康區', '歸仁區', '新化區', '左鎮區', '玉井區', '楠西區'],
+  '高雄市': ['新興區', '前金區', '苓雅區', '鹽埕區', '鼓山區', '旗津區', '前鎮區', '三民區', '楠梓區', '小港區', '左營區', '仁武區']
+}
+
+// 美國州份資料
+const usaStates = {
+  'California': ['Los Angeles', 'San Francisco', 'San Diego', 'Sacramento', 'Oakland', 'Fresno'],
+  'New York': ['New York City', 'Buffalo', 'Rochester', 'Syracuse', 'Albany', 'Yonkers'],
+  'Texas': ['Houston', 'Dallas', 'Austin', 'San Antonio', 'Fort Worth', 'El Paso'],
+  'Florida': ['Miami', 'Orlando', 'Tampa', 'Jacksonville', 'Tallahassee', 'Fort Lauderdale'],
+  'Illinois': ['Chicago', 'Aurora', 'Rockford', 'Joliet', 'Naperville', 'Springfield'],
+  'Pennsylvania': ['Philadelphia', 'Pittsburgh', 'Allentown', 'Erie', 'Reading', 'Scranton']
+}
+
+// 血型
+const bloodTypes = ['A', 'B', 'AB', 'O']
+
+// 台灣姓氏
+const taiwanSurnames = ['陳', '林', '黃', '張', '李', '王', '吳', '劉', '蔡', '楊', '許', '鄭', '謝', '郭', '洪', '邱', '曾', '廖', '賴', '徐', '周', '葉', '蘇', '莊', '呂', '江', '何', '蕭', '羅', '高', '潘', '簡', '朱', '鍾', '游', '彭', '詹', '胡', '施', '沈']
+
+// 台灣名字
+const taiwanMaleNames = ['志明', '家豪', '志偉', '俊傑', '建宏', '俊宏', '志豪', '志強', '建志', '俊男', '家銘', '志宏', '建華', '志華', '俊賢', '建成', '志成', '家維', '俊維', '建銘']
+const taiwanFemaleNames = ['淑芬', '淑惠', '美玲', '雅雯', '怡君', '佳穎', '美惠', '淑娟', '雅婷', '怡萱', '佳蓉', '美華', '淑貞', '雅慧', '怡佳', '佳玲', '美玉', '淑華', '雅玲', '怡雯']
+
+// 美國姓氏
+const usaSurnames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin']
+
+// 美國名字
+const usaMaleNames = ['James', 'Robert', 'John', 'Michael', 'David', 'William', 'Richard', 'Joseph', 'Thomas', 'Christopher', 'Charles', 'Daniel', 'Matthew', 'Anthony', 'Mark', 'Donald', 'Steven', 'Paul', 'Andrew', 'Joshua']
+const usaFemaleNames = ['Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth', 'Barbara', 'Susan', 'Jessica', 'Sarah', 'Karen', 'Lisa', 'Nancy', 'Betty', 'Helen', 'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon', 'Michelle']
+
+// 職業
+const taiwanOccupations = ['軟體工程師', '護理師', '教師', '會計師', '業務員', '設計師', '醫師', '律師', '廚師', '司機', '店員', '工程師', '行政助理', '銀行員', '保險業務', '房仲', '美髮師', '按摩師', '清潔員', '保全']
+const usaOccupations = ['Software Engineer', 'Nurse', 'Teacher', 'Accountant', 'Sales Representative', 'Designer', 'Doctor', 'Lawyer', 'Chef', 'Driver', 'Clerk', 'Engineer', 'Administrative Assistant', 'Banker', 'Insurance Agent', 'Real Estate Agent', 'Hairdresser', 'Massage Therapist', 'Cleaner', 'Security Guard']
+
+// 公司名稱
+const taiwanCompanies = ['台積電', '鴻海科技', '聯發科', '廣達電腦', '華碩', '宏碁', '中華電信', '台灣大哥大', '遠傳電信', '統一企業', '台塑集團', '長榮集團', '中鋼', '台電', '中油', '第一銀行', '玉山銀行', '國泰金控', '富邦金控', '新光集團']
+const usaCompanies = ['Apple Inc.', 'Microsoft Corporation', 'Amazon.com Inc.', 'Google LLC', 'Meta Platforms Inc.', 'Tesla Inc.', 'Netflix Inc.', 'Adobe Inc.', 'Salesforce Inc.', 'Oracle Corporation', 'IBM Corporation', 'Intel Corporation', 'Cisco Systems', 'PayPal Holdings', 'Uber Technologies', 'Airbnb Inc.', 'Zoom Video Communications', 'Shopify Inc.', 'Square Inc.', 'Dropbox Inc.']
+
 interface Identity {
   name: string
   gender: string
@@ -10,10 +54,10 @@ interface Identity {
   email: string
   phone: string
   address: {
-    state: string      // 州/縣市
-    district: string   // 區
-    detail: string     // 詳細地址
-    full: string       // 完整地址
+    state: string
+    district: string
+    detail: string
+    full: string
   }
   occupation: string
   company: string
@@ -24,197 +68,161 @@ interface Identity {
   nationality: string
 }
 
-// 數據庫
-const taiwanData = {
-  firstNames: {
-    male: ['志明', '建華', '偉強', '家豪', '志偉', '俊傑', '志華', '嘉豪', '國華', '文華', '明華', '志豪', '家明', '偉明', '俊華', '宗翰', '承恩', '宇軒', '冠宇', '柏翰'],
-    female: ['美玲', '淑芬', '麗華', '雅婷', '怡君', '佳穎', '淑娟', '美惠', '雅芳', '淑貞', '麗娟', '美珍', '淑華', '雅慧', '佳玲', '詩涵', '語彤', '心妤', '芷若', '思妤']
-  },
-  lastNames: ['陳', '林', '黃', '張', '李', '王', '吳', '劉', '蔡', '楊', '許', '鄭', '謝', '洪', '郭', '邱', '曾', '廖', '賴', '徐', '周', '葉', '蘇', '莊', '呂'],
-  occupations: [
-    '軟體工程師', '產品經理', 'UI/UX設計師', '數位行銷專員', '業務代表', '會計師', '律師', '醫師', '護理師', '教師',
-    '記者', '攝影師', '廚師', '服務員', '司機', '保全', '清潔員', '建築師', '土木工程師', '研究員', '藥師', '物理治療師'
-  ],
-  companies: [
-    '台積電', '鴻海科技集團', '聯發科技', '廣達電腦', '華碩電腦', '宏碁', '台達電子', '中華電信', '遠傳電信', '台灣大哥大',
-    '統一企業', '台塑集團', '長榮集團', '富邦金控', '國泰金控', '中信金控', '玉山銀行', '第一銀行', '華南銀行', '合作金庫',
-    '台新銀行', '永豐銀行', '聯邦銀行', '元大金控', '新光金控'
-  ],
-  cities: ['台北市', '新北市', '桃園市', '台中市', '台南市', '高雄市', '基隆市', '新竹市', '嘉義市', '新竹縣', '苗栗縣', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '屏東縣', '宜蘭縣', '花蓮縣', '台東縣', '澎湖縣'],
-  districts: ['中正區', '大同區', '中山區', '松山區', '大安區', '萬華區', '信義區', '士林區', '北投區', '內湖區', '南港區', '文山區', '中西區', '東區', '南區', '北區', '安平區', '安南區'],
-  roads: ['中山路', '中正路', '民生路', '民權路', '復興路', '和平路', '信義路', '仁愛路', '忠孝路', '建國路', '光復路', '敦化路', '南京路', '長安路', '松江路'],
-  phonePrefix: ['09', '08', '07'],
-  countryCode: '+886'
-}
-
-const usaData = {
-  firstNames: {
-    male: ['James', 'Robert', 'John', 'Michael', 'David', 'William', 'Richard', 'Joseph', 'Thomas', 'Christopher', 'Charles', 'Daniel', 'Matthew', 'Anthony', 'Mark', 'Donald', 'Steven', 'Paul', 'Andrew', 'Joshua'],
-    female: ['Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth', 'Barbara', 'Susan', 'Jessica', 'Sarah', 'Karen', 'Lisa', 'Nancy', 'Betty', 'Helen', 'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon', 'Michelle']
-  },
-  lastNames: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'],
-  occupations: [
-    'Software Engineer', 'Product Manager', 'UX Designer', 'Marketing Specialist', 'Sales Representative', 'Accountant', 'Lawyer', 'Doctor', 'Nurse', 'Teacher',
-    'Journalist', 'Photographer', 'Chef', 'Server', 'Driver', 'Security Guard', 'Cleaner', 'Architect', 'Engineer', 'Researcher', 'Pharmacist', 'Physical Therapist'
-  ],
-  companies: [
-    'Apple Inc.', 'Microsoft Corporation', 'Amazon.com Inc.', 'Alphabet Inc.', 'Meta Platforms Inc.', 'Tesla Inc.', 'Berkshire Hathaway', 'NVIDIA Corporation', 'JPMorgan Chase & Co.', 'Johnson & Johnson',
-    'Walmart Inc.', 'Procter & Gamble', 'Visa Inc.', 'Home Depot', 'Mastercard Inc.', 'Bank of America Corp.', 'Disney', 'Netflix Inc.', 'Adobe Inc.', 'Salesforce Inc.'
-  ],
-  states: ['California', 'Texas', 'Florida', 'New York', 'Pennsylvania', 'Illinois', 'Ohio', 'Georgia', 'North Carolina', 'Michigan', 'New Jersey', 'Virginia', 'Washington', 'Arizona', 'Massachusetts'],
-  cities: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose', 'Austin', 'Jacksonville', 'Fort Worth', 'Columbus', 'Charlotte'],
-  streets: ['Main St', 'Oak St', 'Pine St', 'Maple St', 'Cedar St', 'Elm St', 'Washington St', 'Lake St', 'Hill St', 'Park Ave', 'Lincoln St', 'First St', 'Second St', 'Third St', 'Fourth St'],
-  phoneAreaCodes: ['212', '213', '312', '415', '617', '713', '818', '202', '305', '404', '602', '702', '206', '503', '214'],
-  countryCode: '+1'
-}
-
-const bloodTypes = ['A', 'B', 'AB', 'O']
-
 const IdentityGenerator = () => {
   const [identity, setIdentity] = useState<Identity | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [selectedGender, setSelectedGender] = useState<'random' | 'male' | 'female'>('random')
   const [selectedNationality, setSelectedNationality] = useState<'taiwan' | 'usa'>('taiwan')
   const [ageRange, setAgeRange] = useState({ min: 18, max: 65 })
+  const [batchCount, setBatchCount] = useState(1)
+  const [batchIdentities, setBatchIdentities] = useState<Identity[]>([])
+  const [showBatchMode, setShowBatchMode] = useState(false)
 
   // 隨機選擇函數
-  const randomChoice = <T,>(array: T[]): T => {
-    return array[Math.floor(Math.random() * array.length)]
-  }
+  const randomChoice = <T,>(array: T[]): T => array[Math.floor(Math.random() * array.length)]
 
-  // 隨機數字範圍
-  const randomBetween = (min: number, max: number): number => {
-    return Math.floor(Math.random() * (max - min + 1)) + min
-  }
-
-  // 生成隨機日期
-  const generateBirthday = (age: number): string => {
-    const currentYear = new Date().getFullYear()
-    const birthYear = currentYear - age
-    const month = randomBetween(1, 12)
-    const day = randomBetween(1, 28) // 簡化處理，避免月份天數問題
-    return `${birthYear}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
-  }
-
-  // 生成身份證號碼（模擬格式）
-  const generateIdNumber = (gender: string, nationality: string): string => {
-    if (nationality === 'taiwan') {
-      const firstDigit = gender === 'male' ? '1' : '2'
-      const randomDigits = Array.from({ length: 8 }, () => randomBetween(0, 9)).join('')
-      return `A${firstDigit}${randomDigits}`
-    } else {
-      // 美國 SSN 格式 (XXX-XX-XXXX)
-      const area = randomBetween(100, 999)
-      const group = randomBetween(10, 99)
-      const serial = randomBetween(1000, 9999)
-      return `${area}-${group}-${serial}`
-    }
-  }
-
-  // 生成電話號碼
-  const generatePhone = (nationality: string): string => {
-    if (nationality === 'taiwan') {
-      const prefix = randomChoice(taiwanData.phonePrefix)
-      const numbers = Array.from({ length: 8 }, () => randomBetween(0, 9)).join('')
-      return `${taiwanData.countryCode} ${prefix}${numbers}`
-    } else {
-      const areaCode = randomChoice(usaData.phoneAreaCodes)
-      const exchange = randomBetween(200, 999)
-      const number = randomBetween(1000, 9999)
-      return `${usaData.countryCode} (${areaCode}) ${exchange}-${number}`
-    }
-  }
-
-  // 生成電子郵件
-  const generateEmail = (name: string, nationality: string): string => {
-    const domains = nationality === 'taiwan' 
-      ? ['gmail.com', 'yahoo.com.tw', 'hotmail.com', 'outlook.com', 'example.com.tw']
-      : ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'example.com']
+  // 生成隨機生日
+  const generateRandomBirthday = (age: number): string => {
+    const today = new Date()
+    const birthYear = today.getFullYear() - age
+    const birthMonth = Math.floor(Math.random() * 12) + 1
+    const daysInMonth = new Date(birthYear, birthMonth, 0).getDate()
+    const birthDay = Math.floor(Math.random() * daysInMonth) + 1
     
-    const randomNum = randomBetween(100, 999)
-    let username: string
+    return `${birthYear}/${birthMonth.toString().padStart(2, '0')}/${birthDay.toString().padStart(2, '0')}`
+  }
+
+  // 生成台灣身份證號
+  const generateTaiwanId = (gender: string): string => {
+    const cityCode = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    const firstChar = randomChoice(cityCode)
+    const genderCode = gender === '男' ? '1' : '2'
+    const randomNumbers = Array.from({length: 7}, () => Math.floor(Math.random() * 10)).join('')
     
-    if (nationality === 'taiwan') {
-      // 台灣用戶名使用拼音或英文
-      username = `user${randomNum}`
+    // 簡化的檢查碼計算
+    const checkDigit = Math.floor(Math.random() * 10)
+    
+    return `${firstChar}${genderCode}${randomNumbers}${checkDigit}`
+  }
+
+  // 生成美國SSN
+  const generateUSASSN = (): string => {
+    const area = Math.floor(Math.random() * 899) + 100
+    const group = Math.floor(Math.random() * 99) + 1
+    const serial = Math.floor(Math.random() * 9999) + 1
+    
+    return `${area.toString().padStart(3, '0')}-${group.toString().padStart(2, '0')}-${serial.toString().padStart(4, '0')}`
+  }
+
+  // 生成隨機身份
+  const generateRandomIdentity = (): Identity => {
+    const isTaiwan = selectedNationality === 'taiwan'
+    const genderOptions = selectedGender === 'random' ? ['male', 'female'] : [selectedGender]
+    const randomGender = randomChoice(genderOptions)
+    const genderText = isTaiwan ? (randomGender === 'male' ? '男' : '女') : (randomGender === 'male' ? 'Male' : 'Female')
+    
+    const age = Math.floor(Math.random() * (ageRange.max - ageRange.min + 1)) + ageRange.min
+    const birthday = generateRandomBirthday(age)
+    
+    let name: string
+    let surname: string
+    let firstName: string
+    
+    if (isTaiwan) {
+      surname = randomChoice(taiwanSurnames)
+      firstName = randomGender === 'male' ? randomChoice(taiwanMaleNames) : randomChoice(taiwanFemaleNames)
+      name = surname + firstName
     } else {
-      // 美國用戶名使用名字
-      username = name.toLowerCase().replace(/\s+/g, '.') + randomNum
+      surname = randomChoice(usaSurnames)
+      firstName = randomGender === 'male' ? randomChoice(usaMaleNames) : randomChoice(usaFemaleNames)
+      name = `${firstName} ${surname}`
     }
     
-    return `${username}@${randomChoice(domains)}`
-  }
-
-  // 生成地址
-  const generateAddress = (nationality: string) => {
-    if (nationality === 'taiwan') {
-      const city = randomChoice(taiwanData.cities)
-      const district = randomChoice(taiwanData.districts)
-      const road = randomChoice(taiwanData.roads)
-      const number = randomBetween(1, 999)
-      const floor = randomBetween(1, 12)
-      const detail = `${road}${number}號${floor}樓`
-      const full = `${city}${district}${detail}`
-      
-      return {
-        state: city,
-        district: district,
-        detail: detail,
-        full: full
+    // 修復電子郵件生成 - 多樣化用戶名
+    const emailDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com', 'protonmail.com', 'live.com']
+    const randomDomain = randomChoice(emailDomains)
+    
+    // 擴充的英文名字庫
+    const firstNames = ['alex', 'david', 'john', 'mike', 'tom', 'jack', 'sam', 'ben', 'chris', 'ryan',
+                       'lisa', 'mary', 'anna', 'sara', 'emma', 'lucy', 'kate', 'amy', 'jane', 'rose',
+                       'james', 'robert', 'william', 'richard', 'charles', 'joseph', 'thomas', 'daniel',
+                       'matthew', 'anthony', 'mark', 'donald', 'steven', 'paul', 'andrew', 'joshua',
+                       'patricia', 'jennifer', 'linda', 'elizabeth', 'barbara', 'susan', 'jessica',
+                       'sarah', 'karen', 'nancy', 'betty', 'helen', 'sandra', 'donna', 'carol']
+    
+    const lastNames = ['smith', 'johnson', 'williams', 'brown', 'jones', 'garcia', 'miller', 'davis',
+                      'rodriguez', 'martinez', 'hernandez', 'lopez', 'gonzalez', 'wilson', 'anderson',
+                      'thomas', 'taylor', 'moore', 'jackson', 'martin', 'lee', 'perez', 'thompson',
+                      'white', 'harris', 'sanchez', 'clark', 'ramirez', 'lewis', 'robinson']
+    
+    // 多種郵件用戶名生成方式
+    const emailGenerationMethods = [
+      // 方法1: 名字 + 數字
+      () => `${randomChoice(firstNames)}${Math.floor(Math.random() * 1000)}`,
+      // 方法2: 姓.名 + 數字
+      () => `${randomChoice(firstNames)}.${randomChoice(lastNames)}${Math.floor(Math.random() * 100)}`,
+      // 方法3: 姓名組合 + 年份
+      () => `${randomChoice(firstNames)}${randomChoice(lastNames)}${Math.floor(Math.random() * 30) + 1990}`,
+      // 方法4: 名字 + 姓氏首字母 + 數字
+      () => `${randomChoice(firstNames)}${randomChoice(lastNames).charAt(0)}${Math.floor(Math.random() * 999)}`,
+      // 方法5: 隨機字母組合 + 數字
+      () => {
+        const chars = 'abcdefghijklmnopqrstuvwxyz'
+        let result = ''
+        for (let i = 0; i < Math.floor(Math.random() * 3) + 4; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length))
+        }
+        return result + Math.floor(Math.random() * 1000)
+      },
+      // 方法6: 真實姓名轉拼音 (簡化版)
+      () => {
+        if (isTaiwan) {
+          const pinyinMap: Record<string, string> = {
+            '陳': 'chen', '林': 'lin', '黃': 'huang', '張': 'zhang', '李': 'li', '王': 'wang',
+            '吳': 'wu', '劉': 'liu', '蔡': 'cai', '楊': 'yang', '許': 'xu', '鄭': 'zheng',
+            '志明': 'zhiming', '家豪': 'jiahao', '志偉': 'zhiwei', '淑芬': 'shufen', '淑惠': 'shuhui'
+          }
+          const surnamePin = pinyinMap[surname] || randomChoice(firstNames)
+          const firstNamePin = pinyinMap[firstName] || randomChoice(lastNames)
+          return `${surnamePin}${firstNamePin}${Math.floor(Math.random() * 100)}`
+        } else {
+          return `${firstName.toLowerCase()}${surname.toLowerCase()}${Math.floor(Math.random() * 100)}`
+        }
       }
-    } else {
-      const number = randomBetween(100, 9999)
-      const street = randomChoice(usaData.streets)
-      const city = randomChoice(usaData.cities)
-      const state = randomChoice(usaData.states)
-      const zipCode = randomBetween(10000, 99999)
-      const detail = `${number} ${street}`
-      const full = `${detail}, ${city}, ${state} ${zipCode}`
-      
-      return {
-        state: state,
-        district: city,
-        detail: detail,
-        full: full
-      }
-    }
-  }
-
-  // 生成完整身份
-  const generateIdentity = (): Identity => {
-    const gender = selectedGender === 'random' ? randomChoice(['male', 'female']) : selectedGender
-    const nationality = selectedNationality
-    const data = nationality === 'taiwan' ? taiwanData : usaData
+    ]
     
-    // 性別文字
-    const genderText = nationality === 'taiwan' 
-      ? (gender === 'male' ? '男' : '女')
-      : (gender === 'male' ? 'Male' : 'Female')
+    const generateEmailUsername = randomChoice(emailGenerationMethods)
+    const emailUsername = generateEmailUsername()
+    const email = `${emailUsername}@${randomDomain}`
     
-    // 姓名
-    const firstName = randomChoice(data.firstNames[gender as keyof typeof data.firstNames])
-    const lastName = randomChoice(data.lastNames)
-    const name = nationality === 'taiwan' ? lastName + firstName : `${firstName} ${lastName}`
+    const cities = isTaiwan ? taiwanCities : usaStates
+    const cityKeys = Object.keys(cities)
+    const selectedCity = randomChoice(cityKeys)
+    const selectedDistrict = randomChoice(cities[selectedCity as keyof typeof cities])
     
-    const age = randomBetween(ageRange.min, ageRange.max)
-    const birthday = generateBirthday(age)
-    const email = generateEmail(name, nationality)
-    const phone = generatePhone(nationality)
-    const address = generateAddress(nationality)
-    const occupation = randomChoice(data.occupations)
-    const company = randomChoice(data.companies)
-    const idNumber = generateIdNumber(gender, nationality)
+    const streetNumber = Math.floor(Math.random() * 999) + 1
+    const streetNames = isTaiwan 
+      ? ['中正路', '中山路', '民生路', '民族路', '光復路', '建國路', '忠孝路', '仁愛路', '信義路', '和平路']
+      : ['Main Street', 'Oak Avenue', 'Park Road', 'First Street', 'Second Avenue', 'Elm Street', 'Maple Drive', 'Cedar Lane', 'Pine Street', 'Washington Ave']
+    const streetName = randomChoice(streetNames)
+    
+    const detail = isTaiwan ? `${streetName}${streetNumber}號` : `${streetNumber} ${streetName}`
+    const fullAddress = isTaiwan 
+      ? `${selectedCity}${selectedDistrict}${detail}`
+      : `${streetNumber} ${streetName}, ${selectedDistrict}, ${selectedCity}`
+    
+    const occupation = isTaiwan ? randomChoice(taiwanOccupations) : randomChoice(usaOccupations)
+    const company = isTaiwan ? randomChoice(taiwanCompanies) : randomChoice(usaCompanies)
+    
+    const phone = isTaiwan 
+      ? `+886-9${Math.floor(Math.random() * 100000000).toString().padStart(8, '0')}`
+      : `+1-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`
+    
+    const idNumber = isTaiwan ? generateTaiwanId(genderText) : generateUSASSN()
     const bloodType = randomChoice(bloodTypes)
+    const height = Math.floor(Math.random() * 50) + 150
+    const weight = Math.floor(Math.random() * 50) + 50
     
-    // 身高體重根據國籍調整
-    const height = nationality === 'taiwan'
-      ? (gender === 'male' ? randomBetween(160, 185) : randomBetween(150, 175))
-      : (gender === 'male' ? randomBetween(170, 195) : randomBetween(160, 180))
-    
-    const weight = nationality === 'taiwan'
-      ? (gender === 'male' ? randomBetween(55, 90) : randomBetween(45, 75))
-      : (gender === 'male' ? randomBetween(65, 110) : randomBetween(50, 85))
-
     return {
       name,
       gender: genderText,
@@ -222,83 +230,327 @@ const IdentityGenerator = () => {
       birthday,
       email,
       phone,
-      address,
+      address: {
+        state: selectedCity,
+        district: selectedDistrict as string,
+        detail,
+        full: fullAddress
+      },
       occupation,
       company,
       idNumber,
       bloodType,
       height,
       weight,
-      nationality: nationality === 'taiwan' ? '台灣' : '美國'
+      nationality: isTaiwan ? '台灣' : '美國'
     }
-  }
-
-  // 處理生成按鈕點擊
-  const handleGenerate = async () => {
-    setIsGenerating(true)
-    
-    // 添加一些延遲效果，讓用戶感覺到生成過程
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    const newIdentity = generateIdentity()
-    setIdentity(newIdentity)
-    setIsGenerating(false)
   }
 
   // 複製到剪貼板
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      // 可以添加成功提示
-    } catch (err) {
-      console.error('複製失敗:', err)
-    }
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      // 可以添加提示訊息
+    })
   }
 
-  // 複製全部信息
-  const copyAllInfo = async () => {
+  // 複製所有資訊
+  const copyAllInfo = () => {
     if (!identity) return
     
     const isEnglish = identity.nationality === '美國'
-    const allInfo = isEnglish ? `
-Name: ${identity.name}
-Gender: ${identity.gender}
-Age: ${identity.age} years old
-Birthday: ${identity.birthday}
-Email: ${identity.email}
-Phone: ${identity.phone}
-Address: ${identity.address.full}
-State: ${identity.address.state}
-District/City: ${identity.address.district}
-Detail: ${identity.address.detail}
-Occupation: ${identity.occupation}
-Company: ${identity.company}
-ID Number: ${identity.idNumber}
-Blood Type: ${identity.bloodType}
-Height: ${identity.height}cm
-Weight: ${identity.weight}kg
-Nationality: ${identity.nationality}
-    `.trim() : `
-姓名: ${identity.name}
-性別: ${identity.gender}
-年齡: ${identity.age}歲
-生日: ${identity.birthday}
-電子郵件: ${identity.email}
-電話: ${identity.phone}
-完整地址: ${identity.address.full}
-縣市: ${identity.address.state}
-區域: ${identity.address.district}
-詳細地址: ${identity.address.detail}
-職業: ${identity.occupation}
-公司: ${identity.company}
-身份證號: ${identity.idNumber}
-血型: ${identity.bloodType}型
-身高: ${identity.height}cm
-體重: ${identity.weight}kg
-國籍: ${identity.nationality}
-    `.trim()
+    const info = isEnglish ? [
+      `Name: ${identity.name}`,
+      `Gender: ${identity.gender}`,
+      `Age: ${identity.age}`,
+      `Birthday: ${identity.birthday}`,
+      `Email: ${identity.email}`,
+      `Phone: ${identity.phone}`,
+      `Address: ${identity.address.full}`,
+      `Occupation: ${identity.occupation}`,
+      `Company: ${identity.company}`,
+      `ID Number: ${identity.idNumber}`,
+      `Blood Type: ${identity.bloodType}`,
+      `Height: ${identity.height}cm`,
+      `Weight: ${identity.weight}kg`,
+      `Nationality: ${identity.nationality}`
+    ] : [
+      `姓名: ${identity.name}`,
+      `性別: ${identity.gender}`,
+      `年齡: ${identity.age}`,
+      `生日: ${identity.birthday}`,
+      `電子郵件: ${identity.email}`,
+      `電話: ${identity.phone}`,
+      `地址: ${identity.address.full}`,
+      `職業: ${identity.occupation}`,
+      `公司: ${identity.company}`,
+      `身份證號: ${identity.idNumber}`,
+      `血型: ${identity.bloodType}型`,
+      `身高: ${identity.height}cm`,
+      `體重: ${identity.weight}kg`,
+      `國籍: ${identity.nationality}`
+    ]
     
-    await copyToClipboard(allInfo)
+    copyToClipboard(info.join('\n'))
+  }
+
+  // CSV 下載功能（保留）
+  const downloadCSV = () => {
+    if (batchIdentities.length === 0) return;
+    const isEnglish = batchIdentities[0].nationality === '美國';
+    const headers = isEnglish ? [
+      'Name', 'Gender', 'Age', 'Birthday', 'Email', 'Phone',
+      'State', 'District', 'Street Address', 'Full Address',
+      'Occupation', 'Company', 'ID Number', 'Blood Type',
+      'Height (cm)', 'Weight (kg)', 'Nationality'
+    ] : [
+      '姓名', '性別', '年齡', '生日', '電子郵件', '電話',
+      '縣市', '區域', '詳細地址', '完整地址',
+      '職業', '公司', '身份證號', '血型',
+      '身高(cm)', '體重(kg)', '國籍'
+    ];
+    const csvData = batchIdentities.map(identity => [
+      identity.name,
+      identity.gender,
+      identity.age,
+      identity.birthday,
+      identity.email,
+      identity.phone,
+      identity.address.state,
+      identity.address.district,
+      identity.address.detail,
+      identity.address.full,
+      identity.occupation,
+      identity.company,
+      identity.idNumber,
+      identity.bloodType + (isEnglish ? '' : '型'),
+      identity.height,
+      identity.weight,
+      identity.nationality
+    ]);
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row =>
+        row.map(field =>
+          typeof field === 'string' && (field.includes(',') || field.includes('"'))
+            ? `"${field.replace(/"/g, '""')}"`
+            : field
+        ).join(',')
+      )
+    ].join('\n');
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    const fileName = batchIdentities.length > 1
+      ? `batch_identities_${batchIdentities.length}_${new Date().toISOString().split('T')[0]}.csv`
+      : `identity_${identity?.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+    link.setAttribute('download', fileName);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url)
+  }
+
+  // PDF 下載功能 - 使用瀏覽器打印功能避免中文亂碼
+  const downloadPDF = () => {
+    if (batchIdentities.length === 0) return
+
+    const isEnglish = batchIdentities[0].nationality === '美國'
+    
+    // 創建一個新的窗口用於打印
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+
+    // 生成 HTML 內容
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>${isEnglish ? 'Generated Identity Information' : '生成的身份信息'}</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            color: #333;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+          }
+          .header h1 {
+            color: #007bff;
+            margin: 0;
+            font-size: 24px;
+          }
+          .identity-section {
+            margin-bottom: 40px;
+            page-break-inside: avoid;
+          }
+          .identity-title {
+            background: #f8f9fa;
+            padding: 10px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 18px;
+          }
+          .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+          }
+          .info-item {
+            padding: 10px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            background: #f8f9fa;
+          }
+          .info-label {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
+          }
+          .info-value {
+            color: #2c3e50;
+            word-break: break-all;
+          }
+          .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+            padding-top: 20px;
+          }
+          @media print {
+            body { margin: 0; }
+            .identity-section { page-break-after: auto; }
+          }
+          @media screen {
+            body { max-width: 800px; margin: 0 auto; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>${isEnglish ? 'Generated Identity Information' : '生成的身份信息'}</h1>
+          ${batchIdentities.length > 1 ? `<p>${isEnglish ? `Total: ${batchIdentities.length} identities` : `共 ${batchIdentities.length} 個身份`}</p>` : ''}
+        </div>
+        
+        ${batchIdentities.map((identity, index) => `
+          <div class="identity-section">
+            ${batchIdentities.length > 1 ? `<div class="identity-title">${isEnglish ? `Identity ${index + 1}` : `身份 ${index + 1}`}</div>` : ''}
+            
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Name' : '姓名'}</div>
+                <div class="info-value">${identity.name}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Gender' : '性別'}</div>
+                <div class="info-value">${identity.gender}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Age' : '年齡'}</div>
+                <div class="info-value">${identity.age}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Birthday' : '生日'}</div>
+                <div class="info-value">${identity.birthday}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Email' : '電子郵件'}</div>
+                <div class="info-value">${identity.email}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Phone' : '電話'}</div>
+                <div class="info-value">${identity.phone}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Address' : '地址'}</div>
+                <div class="info-value">${identity.address.full}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Occupation' : '職業'}</div>
+                <div class="info-value">${identity.occupation}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Company' : '公司'}</div>
+                <div class="info-value">${identity.company}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'ID Number' : '身份證號'}</div>
+                <div class="info-value">${identity.idNumber}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Blood Type' : '血型'}</div>
+                <div class="info-value">${identity.bloodType}${identity.nationality === '美國' ? '' : '型'}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Height' : '身高'}</div>
+                <div class="info-value">${identity.height}cm</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Weight' : '體重'}</div>
+                <div class="info-value">${identity.weight}kg</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">${identity.nationality === '美國' ? 'Nationality' : '國籍'}</div>
+                <div class="info-value">${identity.nationality}</div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+        
+        <div class="footer">
+          <p>${isEnglish ? 'Generated on' : '生成時間'}: ${new Date().toLocaleString(isEnglish ? 'en-US' : 'zh-TW')}</p>
+          <p style="font-size: 10px; color: #999;">
+            ${isEnglish ? 'This information is generated for testing purposes only and should not be used for illegal activities.' : '此信息僅供測試使用，請勿用於非法用途。'}
+          </p>
+        </div>
+      </body>
+      </html>
+    `
+
+    // 寫入內容並觸發打印
+    printWindow.document.write(htmlContent)
+    printWindow.document.close()
+    
+    // 等待內容載入完成後觸發打印對話框
+    printWindow.onload = () => {
+      setTimeout(() => {
+        printWindow.print()
+        // 打印完成後關閉窗口
+        printWindow.onafterprint = () => {
+          printWindow.close()
+        }
+      }, 500)
+    }
+  }
+
+  // 生成身份
+  const handleGenerate = () => {
+    setIsGenerating(true)
+    
+    setTimeout(() => {
+      if (showBatchMode && batchCount > 1) {
+        const identities = Array.from({ length: batchCount }, () => generateRandomIdentity())
+        setBatchIdentities(identities)
+        setIdentity(identities[0])
+      } else {
+        const newIdentity = generateRandomIdentity()
+        setIdentity(newIdentity)
+        setBatchIdentities([newIdentity])
+      }
+      setIsGenerating(false)
+    }, 500)
   }
 
   return (
@@ -310,243 +562,227 @@ Nationality: ${identity.nationality}
 
       <div className="generator-controls">
         <div className="control-group">
-          <label>國籍選擇：</label>
-          <div className="nationality-selector">
-            <button 
-              className={`control-btn ${selectedNationality === 'taiwan' ? 'active' : ''}`}
-              onClick={() => setSelectedNationality('taiwan')}
-            >
-              🇹🇼 台灣
-            </button>
-            <button 
-              className={`control-btn ${selectedNationality === 'usa' ? 'active' : ''}`}
-              onClick={() => setSelectedNationality('usa')}
-            >
-              🇺🇸 美國
-            </button>
+          <label>國籍：</label>
+          <select 
+            value={selectedNationality} 
+            onChange={(e) => setSelectedNationality(e.target.value as 'taiwan' | 'usa')}
+          >
+            <option value="taiwan">台灣</option>
+            <option value="usa">美國</option>
+          </select>
+        </div>
+
+        <div className="control-group">
+          <label>性別：</label>
+          <select 
+            value={selectedGender} 
+            onChange={(e) => setSelectedGender(e.target.value as 'random' | 'male' | 'female')}
+          >
+            <option value="random">隨機</option>
+            <option value="male">男性</option>
+            <option value="female">女性</option>
+          </select>
+        </div>
+
+        <div className="control-group">
+          <label>年齡範圍：</label>
+          <div className="age-range">
+            <input
+              type="number"
+              min="1"
+              max="100"
+              value={ageRange.min}
+              onChange={(e) => setAgeRange(prev => ({ ...prev, min: parseInt(e.target.value) }))}
+            />
+            <span>到</span>
+            <input
+              type="number"
+              min="1"
+              max="100"
+              value={ageRange.max}
+              onChange={(e) => setAgeRange(prev => ({ ...prev, max: parseInt(e.target.value) }))}
+            />
           </div>
         </div>
 
         <div className="control-group">
-          <label>性別選擇：</label>
-          <div className="gender-selector">
-            <button 
-              className={`control-btn ${selectedGender === 'random' ? 'active' : ''}`}
-              onClick={() => setSelectedGender('random')}
-            >
-              隨機
-            </button>
-            <button 
-              className={`control-btn ${selectedGender === 'male' ? 'active' : ''}`}
-              onClick={() => setSelectedGender('male')}
-            >
-              {selectedNationality === 'taiwan' ? '男性' : 'Male'}
-            </button>
-            <button 
-              className={`control-btn ${selectedGender === 'female' ? 'active' : ''}`}
-              onClick={() => setSelectedGender('female')}
-            >
-              {selectedNationality === 'taiwan' ? '女性' : 'Female'}
-            </button>
-          </div>
+          <label>
+            <input
+              type="checkbox"
+              checked={showBatchMode}
+              onChange={(e) => setShowBatchMode(e.target.checked)}
+            />
+            批量生成模式
+          </label>
         </div>
 
-        <div className="control-group age-control">
-          <label>年齡範圍：</label>
-          <div className="age-range">
-            <div className="age-input-group">
-              <label className="age-label">最小</label>
-              <input
-                type="number"
-                min="1"
-                max="100"
-                value={ageRange.min}
-                onChange={(e) => setAgeRange(prev => ({ ...prev, min: parseInt(e.target.value) }))}
-                className="age-input"
-              />
-            </div>
-            <span className="age-separator">至</span>
-            <div className="age-input-group">
-              <label className="age-label">最大</label>
-              <input
-                type="number"
-                min="1"
-                max="100"
-                value={ageRange.max}
-                onChange={(e) => setAgeRange(prev => ({ ...prev, max: parseInt(e.target.value) }))}
-                className="age-input"
-              />
-            </div>
-            <span className="age-unit">歲</span>
+        {showBatchMode && (
+          <div className="control-group">
+            <label>生成數量：</label>
+            <input
+              type="number"
+              min="1"
+              max="100"
+              value={batchCount}
+              onChange={(e) => setBatchCount(parseInt(e.target.value))}
+            />
           </div>
-        </div>
+        )}
 
         <button 
-          className="generate-btn"
+          className="generate-btn" 
           onClick={handleGenerate}
           disabled={isGenerating}
         >
-          {isGenerating ? '生成中...' : '🎲 生成隨機身份'}
+          {isGenerating ? '生成中...' : (showBatchMode ? `生成 ${batchCount} 個身份` : '生成隨機身份')}
         </button>
       </div>
 
       {identity && (
         <div className="identity-result">
           <div className="result-header">
-            <h3>生成的身份信息</h3>
-            <button className="copy-all-btn" onClick={copyAllInfo}>
-              📋 複製全部
-            </button>
+            <h3>
+              生成的身份信息
+              {batchIdentities.length > 1 && (
+                <span className="batch-indicator"> (共 {batchIdentities.length} 個)</span>
+              )}
+            </h3>
+            <div className="result-actions">
+              <button className="copy-all-btn" onClick={copyAllInfo}>
+                📋 複製當前
+              </button>
+              <button
+                className="download-csv-btn"
+                onClick={downloadCSV}
+                title={batchIdentities.length > 1 ? `下載 ${batchIdentities.length} 個身份的CSV文件` : '下載CSV文件'}
+              >
+                📊 下載CSV
+              </button>
+              <button
+                className={`download-pdf-btn ${batchIdentities.length > 1 ? 'batch-download' : ''}`}
+                onClick={downloadPDF}
+                title={batchIdentities.length > 1 ? `下載 ${batchIdentities.length} 個身份的PDF文件` : '下載PDF文件'}
+              >
+                📄 下載PDF
+              </button>
+            </div>
           </div>
+
+          {batchIdentities.length > 1 && (
+            <div className="batch-navigation">
+              <span className="nav-info">當前顯示：</span>
+              {batchIdentities.map((_, index) => (
+                <button
+                  key={index}
+                  className={`nav-btn ${identity === batchIdentities[index] ? 'active' : ''}`}
+                  onClick={() => setIdentity(batchIdentities[index])}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="identity-grid">
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Name' : '姓名'}</label>
-              <div className="value-container">
-                <span className="value">{identity.name}</span>
-                <button onClick={() => copyToClipboard(identity.name)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Name' : '姓名'}：</label>
+              <span onClick={() => copyToClipboard(identity.name)}>{identity.name}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.name)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Gender' : '性別'}</label>
-              <div className="value-container">
-                <span className="value">{identity.gender}</span>
-                <button onClick={() => copyToClipboard(identity.gender)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Gender' : '性別'}：</label>
+              <span onClick={() => copyToClipboard(identity.gender)}>{identity.gender}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.gender)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Age' : '年齡'}</label>
-              <div className="value-container">
-                <span className="value">{identity.age}{identity.nationality === '美國' ? ' years old' : '歲'}</span>
-                <button onClick={() => copyToClipboard(identity.age.toString())} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Age' : '年齡'}：</label>
+              <span onClick={() => copyToClipboard(identity.age.toString())}>{identity.age}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.age.toString())} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Birthday' : '生日'}</label>
-              <div className="value-container">
-                <span className="value">{identity.birthday}</span>
-                <button onClick={() => copyToClipboard(identity.birthday)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Birthday' : '生日'}：</label>
+              <span onClick={() => copyToClipboard(identity.birthday)}>{identity.birthday}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.birthday)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Email' : '電子郵件'}</label>
-              <div className="value-container">
-                <span className="value">{identity.email}</span>
-                <button onClick={() => copyToClipboard(identity.email)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Email' : '電子郵件'}：</label>
+              <span onClick={() => copyToClipboard(identity.email)}>{identity.email}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.email)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Phone' : '電話'}</label>
-              <div className="value-container">
-                <span className="value">{identity.phone}</span>
-                <button onClick={() => copyToClipboard(identity.phone)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Phone' : '電話'}：</label>
+              <span onClick={() => copyToClipboard(identity.phone)}>{identity.phone}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.phone)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'State' : '縣市'}</label>
-              <div className="value-container">
-                <span className="value">{identity.address.state}</span>
-                <button onClick={() => copyToClipboard(identity.address.state)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'State/City' : '縣市'}：</label>
+              <span onClick={() => copyToClipboard(identity.address.state)}>{identity.address.state}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.address.state)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'City/District' : '區域'}</label>
-              <div className="value-container">
-                <span className="value">{identity.address.district}</span>
-                <button onClick={() => copyToClipboard(identity.address.district)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'District' : '區域'}：</label>
+              <span onClick={() => copyToClipboard(identity.address.district)}>{identity.address.district}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.address.district)} title="複製">📋</button>
             </div>
-
-            <div className="identity-item full-width">
-              <label>{identity.nationality === '美國' ? 'Street Address' : '詳細地址'}</label>
-              <div className="value-container">
-                <span className="value">{identity.address.detail}</span>
-                <button onClick={() => copyToClipboard(identity.address.detail)} className="copy-btn">📋</button>
-              </div>
-            </div>
-
-            <div className="identity-item full-width">
-              <label>{identity.nationality === '美國' ? 'Full Address' : '完整地址'}</label>
-              <div className="value-container">
-                <span className="value">{identity.address.full}</span>
-                <button onClick={() => copyToClipboard(identity.address.full)} className="copy-btn">📋</button>
-              </div>
-            </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Occupation' : '職業'}</label>
-              <div className="value-container">
-                <span className="value">{identity.occupation}</span>
-                <button onClick={() => copyToClipboard(identity.occupation)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Street Address' : '詳細地址'}：</label>
+              <span onClick={() => copyToClipboard(identity.address.detail)}>{identity.address.detail}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.address.detail)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Company' : '公司'}</label>
-              <div className="value-container">
-                <span className="value">{identity.company}</span>
-                <button onClick={() => copyToClipboard(identity.company)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Full Address' : '完整地址'}：</label>
+              <span onClick={() => copyToClipboard(identity.address.full)}>{identity.address.full}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.address.full)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'ID Number' : '身份證號'}</label>
-              <div className="value-container">
-                <span className="value">{identity.idNumber}</span>
-                <button onClick={() => copyToClipboard(identity.idNumber)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Occupation' : '職業'}：</label>
+              <span onClick={() => copyToClipboard(identity.occupation)}>{identity.occupation}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.occupation)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Blood Type' : '血型'}</label>
-              <div className="value-container">
-                <span className="value">{identity.bloodType}{identity.nationality === '台灣' ? '型' : ''}</span>
-                <button onClick={() => copyToClipboard(identity.bloodType)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Company' : '公司'}：</label>
+              <span onClick={() => copyToClipboard(identity.company)}>{identity.company}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.company)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Height' : '身高'}</label>
-              <div className="value-container">
-                <span className="value">{identity.height}cm</span>
-                <button onClick={() => copyToClipboard(identity.height.toString())} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'ID Number' : '身份證號'}：</label>
+              <span onClick={() => copyToClipboard(identity.idNumber)}>{identity.idNumber}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.idNumber)} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Weight' : '體重'}</label>
-              <div className="value-container">
-                <span className="value">{identity.weight}kg</span>
-                <button onClick={() => copyToClipboard(identity.weight.toString())} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Blood Type' : '血型'}：</label>
+              <span onClick={() => copyToClipboard(identity.bloodType + (identity.nationality === '美國' ? '' : '型'))}>
+                {identity.bloodType}{identity.nationality === '美國' ? '' : '型'}
+              </span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.bloodType + (identity.nationality === '美國' ? '' : '型'))} title="複製">📋</button>
             </div>
-
             <div className="identity-item">
-              <label>{identity.nationality === '美國' ? 'Nationality' : '國籍'}</label>
-              <div className="value-container">
-                <span className="value">{identity.nationality}</span>
-                <button onClick={() => copyToClipboard(identity.nationality)} className="copy-btn">📋</button>
-              </div>
+              <label>{identity.nationality === '美國' ? 'Height' : '身高'}：</label>
+              <span onClick={() => copyToClipboard(`${identity.height}cm`)}>{identity.height}cm</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(`${identity.height}cm`)} title="複製">📋</button>
+            </div>
+            <div className="identity-item">
+              <label>{identity.nationality === '美國' ? 'Weight' : '體重'}：</label>
+              <span onClick={() => copyToClipboard(`${identity.weight}kg`)}>{identity.weight}kg</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(`${identity.weight}kg`)} title="複製">📋</button>
+            </div>
+            <div className="identity-item">
+              <label>{identity.nationality === '美國' ? 'Nationality' : '國籍'}：</label>
+              <span onClick={() => copyToClipboard(identity.nationality)}>{identity.nationality}</span>
+              <button className="copy-item-btn" onClick={() => copyToClipboard(identity.nationality)} title="複製">📋</button>
             </div>
           </div>
         </div>
       )}
 
       <div className="tool-info">
-        <h4>⚠️ 重要提醒：</h4>
+        <h4>⚠️ 重要提醒</h4>
         <ul>
-          <li><strong>僅供測試使用</strong>：生成的身份信息完全虛假，僅用於軟體測試、演示等合法用途</li>
-          <li><strong>禁止非法使用</strong>：嚴禁用於詐騙、身份冒用或其他違法行為</li>
-          <li><strong>保護隱私</strong>：可用於需要填寫個人信息但不想透露真實信息的場合</li>
-          <li><strong>數據隨機</strong>：所有數據均為隨機生成，與真實人員無任何關聯</li>
-          <li><strong>格式參考</strong>：身份證號等格式僅為示例，非真實有效證件</li>
+          <li>此工具生成的所有信息均為虛假數據，僅供測試和演示使用</li>
+          <li>請勿將生成的身份信息用於任何非法用途</li>
+          <li>生成的身份證號碼和SSN僅為格式正確的隨機數字，非真實有效證件</li>
+          <li>點擊任何信息項目可快速複製到剪貼板</li>
+          <li>支援CSV和PDF格式下載，方便保存和分享</li>
         </ul>
       </div>
     </div>
