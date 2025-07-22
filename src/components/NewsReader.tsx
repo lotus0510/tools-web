@@ -154,16 +154,10 @@ const NewsReader = () => {
       await Promise.race([fetchGoogleRSS(isSearch), totalTimeout])
     } catch (googleError) {
       addLog(`Google RSS failed: ${googleError}`)
-      try {
-        setLoadingProgress('正在嘗試備用新聞源...')
-        // 後備使用 NewsAPI
-        await fetchNewsAPI(isSearch)
-      } catch (newsApiError) {
-        addLog(`NewsAPI also failed: ${newsApiError}`)
-        setLoadingProgress('載入示例內容...')
-        // 最終後備：顯示示例文章
-        showFallbackArticles()
-      }
+      setLoadingProgress('Google RSS 不可用，載入示例內容...')
+      addLog('ℹ️ Info: Skipping NewsAPI due to browser CORS restrictions')
+      // 直接顯示示例文章，跳過 NewsAPI（因為瀏覽器 CORS 限制）
+      showFallbackArticles()
     } finally {
       setLoadingProgress('')
     }
@@ -171,26 +165,46 @@ const NewsReader = () => {
 
   // 顯示後備文章的函數
   const showFallbackArticles = () => {
-    addLog('Showing fallback articles due to all API failures')
+    addLog('Showing fallback articles - Google RSS temporarily unavailable')
     const fallbackArticles: NewsArticle[] = [
       {
         id: 'fallback-1',
-        title: '網路連接問題',
-        description: '目前無法連接到新聞服務，請檢查網路連接或稍後再試。這是示例內容。',
-        url: '#',
+        title: '🌐 新聞服務暫時不可用',
+        description: 'Google RSS 新聞源暫時無法訪問，這可能是由於網路連接或服務暫時中斷。請稍後重新整理頁面再試。',
+        url: 'https://news.google.com/',
         urlToImage: null,
         publishedAt: new Date().toISOString(),
-        source: { name: 'System' },
+        source: { name: 'Google News' },
         author: 'System'
       },
       {
         id: 'fallback-2',
-        title: '服務暫時不可用',
-        description: '新聞服務暫時不可用，我們正在努力恢復服務。請稍後再試。',
+        title: '🔄 如何重新載入新聞',
+        description: '點擊右上角的重新整理按鈕 🔄 或選擇不同的地區/分類來重新嘗試載入新聞。我們的系統會自動嘗試多個新聞源。',
         url: '#',
         urlToImage: null,
+        publishedAt: new Date(Date.now() - 1800000).toISOString(),
+        source: { name: 'Help' },
+        author: 'System'
+      },
+      {
+        id: 'fallback-3',
+        title: '💡 新聞功能說明',
+        description: '本應用優先使用免費的 Google RSS 新聞源，提供來自世界各地的即時新聞。支援多國家地區和分類篩選。',
+        url: 'https://news.google.com/',
+        urlToImage: null,
         publishedAt: new Date(Date.now() - 3600000).toISOString(),
-        source: { name: 'System' },
+        source: { name: 'Info' },
+        author: 'System'
+      },
+      {
+        id: 'fallback-4',
+        title: '🛠️ 其他可用工具',
+        description: '除了新聞閱讀器，本應用還提供 Base64 編碼、摩斯電碼轉換、AI 聊天助手、多種小遊戲等實用工具。',
+        url: '#',
+        urlToImage: null,
+        publishedAt: new Date(Date.now() - 5400000).toISOString(),
+        source: { name: 'Tools Info' },
         author: 'System'
       }
     ]
@@ -263,10 +277,12 @@ const NewsReader = () => {
   const fetchNewsAPI = async (isSearch = false) => {
     const apiKey = import.meta.env.VITE_NEWS_API_KEY
     if (!apiKey) {
-      throw new Error('News API key not found and Google RSS failed.')
+      addLog('NewsAPI key not found, skipping NewsAPI fallback')
+      throw new Error('NewsAPI not available - no API key configured')
     }
 
     addLog(`Falling back to NewsAPI - Category: ${category}, Country: ${country}${isSearch ? `, Query: ${searchQuery}` : ''}`)
+    addLog('⚠️ Note: NewsAPI free plan has browser CORS restrictions')
     
     try {
       let url: string
@@ -307,15 +323,23 @@ const NewsReader = () => {
       }
       
       addLog(`Making API request to NewsAPI...`)
+      addLog(`⚠️ Warning: NewsAPI free plan blocks browser requests (CORS)`)
       
-      const response = await fetch(url)
+      // 嘗試使用 CORS 代理
+      const corsProxy = 'https://api.allorigins.win/get?url='
+      const proxiedUrl = corsProxy + encodeURIComponent(url)
+      
+      addLog(`Using CORS proxy for NewsAPI: ${corsProxy}`)
+      const response = await fetch(proxiedUrl)
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         throw new Error(`API Error: ${response.status} - ${errorData.message || response.statusText}`)
       }
       
-      const data: NewsResponse = await response.json()
+      const responseData = await response.json()
+      // 如果使用了 CORS 代理，需要解析 contents 字段
+      const data: NewsResponse = responseData.contents ? JSON.parse(responseData.contents) : responseData
       
       if (data.status !== 'ok') {
         throw new Error(`API returned error status: ${data.status}`)

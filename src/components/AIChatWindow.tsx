@@ -275,7 +275,8 @@ const AIChatWindow = () => {
           'Authorization': `Bearer ${settings.apiKey}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': window.location.origin,
-          'X-Title': 'AI Chat Tool'
+          'X-Title': 'AI Chat Tool',
+          'Origin': window.location.origin
         },
         body: JSON.stringify({
           model: settings.model,
