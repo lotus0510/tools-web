@@ -148,11 +148,12 @@ const NewsReader = () => {
       // 優先嘗試 Google RSS
       await Promise.race([fetchGoogleRSS(isSearch), totalTimeout])
     } catch (googleError) {
-      addLog(`Google RSS failed: ${googleError}`)
-      setLoadingProgress('Google RSS 不可用，載入示例內容...')
-      addLog('ℹ️ Info: Skipping NewsAPI due to browser CORS restrictions')
+      addLog(`❌ All news sources failed: ${googleError}`)
+      setLoadingProgress('所有新聞源不可用，載入示例內容...')
+      addLog('ℹ️ 提示：所有 CORS 代理都無法訪問，可能是網路問題')
       // 直接顯示示例文章，跳過 NewsAPI（因為瀏覽器 CORS 限制）
       showFallbackArticles()
+      setError('新聞載入失敗，請檢查網路連接後重試')
     } finally {
       setLoadingProgress('')
     }
@@ -214,11 +215,14 @@ const NewsReader = () => {
     const query = isSearch && searchQuery.trim() ? searchQuery.trim() : ''
     const rssUrl = generateGoogleNewsURL(country, category, query)
     
-    // CORS 代理列表（按速度排序）
+    // CORS 代理列表（按可用性排序 - codetabs 最穩定，thingproxy 簡單易用）
     const corsProxies = [
-      'https://api.allorigins.win/raw?url=',
       'https://api.codetabs.com/v1/proxy?quest=',
-      'https://cors-anywhere.herokuapp.com/'
+      'https://thingproxy.freeboard.io/fetch/',
+      'https://api.allorigins.win/raw?url=',
+      'https://corsproxy.io/?',
+      'https://cors-proxy.htmldriven.com/?url=',
+      'https://proxy.cors.sh/'
     ]
     
     for (const proxy of corsProxies) {
@@ -227,9 +231,12 @@ const NewsReader = () => {
         addLog(`Trying proxy: ${proxy}`)
         setLoadingProgress(`正在嘗試代理服務 ${corsProxies.indexOf(proxy) + 1}/${corsProxies.length}...`)
         
-        // 添加超時控制（縮短到5秒）
+        // 添加超時控制（優質代理給更長時間）
         const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 5000) // 5秒超時
+        let timeout = 5000 // 默認5秒
+        if (proxy.includes('codetabs')) timeout = 8000 // codetabs 最穩定，8秒
+        else if (proxy.includes('thingproxy')) timeout = 6000 // thingproxy 簡單易用，6秒
+        const timeoutId = setTimeout(() => controller.abort(), timeout)
         
         const response = await fetch(proxyUrl, {
           signal: controller.signal,
@@ -252,14 +259,27 @@ const NewsReader = () => {
         }
         
         setArticles(articles)
-        addLog(`Successfully fetched ${articles.length} articles from Google RSS`)
+        let proxyName = 'Unknown'
+        if (proxy.includes('codetabs')) proxyName = 'CodeTabs (最穩定)'
+        else if (proxy.includes('thingproxy')) proxyName = 'ThingProxy (簡單易用)'
+        else if (proxy.includes('allorigins')) proxyName = 'AllOrigins'
+        else proxyName = proxy.replace('https://', '').split('/')[0]
+        
+        addLog(`✅ Successfully fetched ${articles.length} articles from Google RSS via ${proxyName}`)
         setLoading(false)
         return
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
-          addLog(`Proxy ${proxy} timeout after 10 seconds`)
+          const timeoutSeconds = proxy.includes('codetabs') ? 8 : proxy.includes('thingproxy') ? 6 : 5
+          addLog(`❌ Proxy ${proxy} timeout after ${timeoutSeconds} seconds`)
         } else {
-          addLog(`Proxy ${proxy} failed: ${error}`)
+          addLog(`❌ Proxy ${proxy} failed: ${error}`)
+        }
+        // 如果是優質代理失敗，記錄更詳細的信息
+        if (proxy.includes('codetabs')) {
+          addLog(`⚠️ Primary proxy (CodeTabs) failed, trying alternatives...`)
+        } else if (proxy.includes('thingproxy')) {
+          addLog(`⚠️ Secondary proxy (ThingProxy) failed, trying remaining options...`)
         }
         continue
       }
