@@ -1,0 +1,285 @@
+/* 全局手機優化樣式 */
+
+/* 修復側邊欄遮擋問題 */
+@media (max-width: 768px) {
+  /* 確保側邊欄不會遮擋主內容 */
+  .sidebar:not(.open) {
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+
+  .sidebar.open {
+    pointer-events: auto !important;
+    visibility: visible !important;
+  }
+
+  /* 手機端遮罩層 */
+  .sidebar-overlay {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  /* 確保側邊欄內容在遮罩之上 */
+  .sidebar-content {
+    position: relative;
+    z-index: 1000;
+    background: var(--bg-secondary);
+    height: 100%;
+    pointer-events: auto;
+  }
+}
+
+/* 通用手機優化 */
+@media (max-width: 768px) {
+  /* 確保所有工具組件的基本手機適配 */
+  .tool-header {
+    padding: 1rem 0.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .tool-header h2 {
+    font-size: 1.5rem !important;
+  }
+
+  .tool-header p {
+    font-size: 1rem !important;
+  }
+
+  /* 控制面板優化 */
+  .controls,
+  .tool-controls,
+  .config-section,
+  .control-panel {
+    padding: 1rem 0.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* 按鈕優化 */
+  .btn,
+  .button,
+  .control-btn {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.9rem !important;
+    min-height: 44px !important; /* iOS 觸控最小尺寸 */
+  }
+
+  /* 輸入框優化 */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important; /* 防止 iOS 縮放 */
+    padding: 0.75rem !important;
+    min-height: 44px !important;
+  }
+
+  /* 網格佈局優化 */
+  .grid,
+  .stats-grid,
+  .control-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* 卡片優化 */
+  .card,
+  .stat-card,
+  .result-card {
+    padding: 0.75rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* 文本區域優化 */
+  .text-area,
+  .input-area,
+  .output-area {
+    min-height: 150px !important;
+    font-size: 14px !important;
+  }
+
+  /* 滾動區域優化 */
+  .scroll-container,
+  .scrollable {
+    -webkit-overflow-scrolling: touch !important;
+    max-height: 60vh !important;
+  }
+
+  /* 模態框優化 */
+  .modal,
+  .popup,
+  .dialog {
+    width: 95% !important;
+    max-width: none !important;
+    margin: 1rem auto !important;
+  }
+
+  /* 表格優化 */
+  .table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  table {
+    min-width: 100% !important;
+    font-size: 0.85rem !important;
+  }
+
+  th,
+  td {
+    padding: 0.5rem 0.25rem !important;
+  }
+}
+
+/* 超小屏幕優化 */
+@media (max-width: 480px) {
+  .tool-header {
+    padding: 0.75rem 0.25rem !important;
+  }
+
+  .tool-header h2 {
+    font-size: 1.3rem !important;
+  }
+
+  .tool-header p {
+    font-size: 0.9rem !important;
+  }
+
+  .controls,
+  .tool-controls,
+  .config-section {
+    padding: 0.75rem 0.25rem !important;
+  }
+
+  .btn,
+  .button,
+  .control-btn {
+    padding: 0.6rem 0.8rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  .card,
+  .stat-card,
+  .result-card {
+    padding: 0.5rem !important;
+  }
+
+  .text-area,
+  .input-area,
+  .output-area {
+    min-height: 120px !important;
+    font-size: 13px !important;
+  }
+
+  .scroll-container,
+  .scrollable {
+    max-height: 50vh !important;
+  }
+
+  .modal,
+  .popup,
+  .dialog {
+    width: 98% !important;
+    margin: 0.5rem auto !important;
+  }
+
+  table {
+    font-size: 0.8rem !important;
+  }
+
+  th,
+  td {
+    padding: 0.4rem 0.2rem !important;
+  }
+}
+
+/* 觸控優化 */
+@media (hover: none) and (pointer: coarse) {
+  /* 移除 hover 效果，改為 active 效果 */
+  .btn:hover,
+  .button:hover,
+  .tool-item:hover,
+  .card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .btn:active,
+  .button:active,
+  .tool-item:active,
+  .card:active {
+    transform: scale(0.98) !important;
+    opacity: 0.8 !important;
+  }
+
+  /* 增大觸控目標 */
+  .clickable,
+  .btn,
+  .button,
+  .tool-item,
+  .tab,
+  .toggle {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+}
+
+/* 橫屏優化 */
+@media (max-width: 768px) and (orientation: landscape) {
+  .tool-header {
+    padding: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .tool-header h2 {
+    font-size: 1.2rem !important;
+  }
+
+  .controls,
+  .tool-controls {
+    padding: 0.5rem !important;
+  }
+
+  .scroll-container,
+  .scrollable {
+    max-height: 40vh !important;
+  }
+}
+
+/* 防止縮放 */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important; /* 防止 iOS Safari 縮放 */
+  }
+}
+
+/* 安全區域適配 (iPhone X 等) */
+@supports (padding: max(0px)) {
+  @media (max-width: 768px) {
+    .header {
+      padding-left: max(0.5rem, env(safe-area-inset-left)) !important;
+      padding-right: max(0.5rem, env(safe-area-inset-right)) !important;
+    }
+
+    .main-content {
+      padding-left: max(0.5rem, env(safe-area-inset-left)) !important;
+      padding-right: max(0.5rem, env(safe-area-inset-right)) !important;
+      padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+    }
+
+    .sidebar {
+      padding-left: max(0.5rem, env(safe-area-inset-left)) !important;
+    }
+  }
+}

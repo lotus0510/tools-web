@@ -60,6 +60,12 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow: hidden;
+  /* 手機優化 */
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 h1 {

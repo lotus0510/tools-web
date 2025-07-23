@@ -284,54 +284,6 @@ const WeatherForecast = () => {
     }
   }
 
-  // 顯示後備天氣數據
-  const showFallbackWeather = async () => {
-    await new Promise(resolve => setTimeout(resolve, 500)) // 短暫延遲
-    
-    const fallbackCurrentWeather: WeatherData = {
-      id: 'fallback-1',
-      city: city,
-      country: '台灣',
-      temperature: Math.floor(Math.random() * 15) + 15, // 15-30度
-      description: ['晴天', '多雲', '陰天', '小雨'][Math.floor(Math.random() * 4)],
-      humidity: Math.floor(Math.random() * 40) + 40, // 40-80%
-      windSpeed: Math.floor(Math.random() * 10) + 1, // 1-10 km/h
-      rainProbability: Math.floor(Math.random() * 60), // 0-60%
-      icon: '🌤️',
-      timestamp: new Date().toISOString()
-    }
-
-    const fallbackForecast: ForecastData[] = Array.from({ length: 5 }, (_, i) => ({
-      date: new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000).toLocaleDateString('zh-TW'),
-      temperature: {
-        min: Math.floor(Math.random() * 10) + 15,
-        max: Math.floor(Math.random() * 10) + 25
-      },
-      description: ['晴天', '多雲', '陰天', '小雨', '雷雨'][Math.floor(Math.random() * 5)],
-      rainProbability: Math.floor(Math.random() * 80), // 0-80%
-      icon: ['☀️', '⛅', '☁️', '🌧️', '⛈️'][Math.floor(Math.random() * 5)]
-    }))
-
-    const fallbackHourlyForecast: HourlyForecastData[] = Array.from({ length: 8 }, (_, i) => {
-      const time = new Date(Date.now() + (i + 1) * 3 * 60 * 60 * 1000) // 每3小時
-      return {
-        time: time.toLocaleTimeString('zh-TW', { 
-          hour: '2-digit', 
-          minute: '2-digit',
-          hour12: false 
-        }),
-        temperature: Math.floor(Math.random() * 12) + 18, // 18-30度
-        description: ['晴天', '多雲', '陰天', '小雨'][Math.floor(Math.random() * 4)],
-        rainProbability: Math.floor(Math.random() * 70), // 0-70%
-        icon: ['☀️', '⛅', '☁️', '🌧️'][Math.floor(Math.random() * 4)]
-      }
-    })
-
-    setCurrentWeather(fallbackCurrentWeather)
-    setForecast(fallbackForecast)
-    setHourlyForecast(fallbackHourlyForecast)
-    addLog(`✅ 載入 ${city} 的示例天氣資料（包含每3小時預報）`)
-  }
 
   // 格式化溫度
   const formatTemperature = (temp: number) => `${temp}°C`

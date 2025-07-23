@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import { useIsMobile } from './hooks/useIsMobile'
 import Base64Tool from './components/Base64Tool'
 import IdentityGenerator from './components/IdentityGenerator'
 import MorseCodeConverter from './components/MorseCodeConverter'
@@ -38,10 +39,20 @@ const tools: Tool[] = [
 
 function App() {
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const isMobile = useIsMobile(768)
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile) // 手機端默認關閉側邊欄
 
   // 獲取工具分類
   const categories = Array.from(new Set(tools.map(tool => tool.category)))
+
+  // 處理工具選擇（手機端自動關閉側邊欄）
+  const handleToolSelect = (toolId: string) => {
+    setSelectedTool(toolId)
+    if (isMobile) {
+      console.log('手機端選擇工具，自動關閉側邊欄')
+      setSidebarOpen(false)
+    }
+  }
 
   const renderToolContent = () => {
     if (!selectedTool) {
@@ -54,7 +65,7 @@ function App() {
               <div 
                 key={tool.id} 
                 className="tool-card"
-                onClick={() => setSelectedTool(tool.id)}
+                onClick={() => handleToolSelect(tool.id)}
               >
                 <div className="tool-icon">{tool.icon}</div>
                 <h3>{tool.name}</h3>
@@ -117,7 +128,10 @@ function App() {
         <div className="header-left">
           <button 
             className="sidebar-toggle"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={() => {
+              console.log('切換側邊欄，當前狀態:', sidebarOpen)
+              setSidebarOpen(!sidebarOpen)
+            }}
           >
             ☰
           </button>
@@ -127,7 +141,13 @@ function App() {
           {selectedTool && (
             <button 
               className="home-btn"
-              onClick={() => setSelectedTool(null)}
+              onClick={() => {
+                setSelectedTool(null)
+                if (isMobile) {
+                  console.log('手機端點擊首頁，自動關閉側邊欄')
+                  setSidebarOpen(false)
+                }
+              }}
               title="回到首頁"
             >
               🏠 首頁
@@ -138,6 +158,25 @@ function App() {
       </header>
 
       <div className="main-container">
+        {/* 手機端遮罩層，點擊關閉側邊欄 */}
+        {sidebarOpen && (
+          <div 
+            className="sidebar-overlay"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              console.log('遮罩層被點擊，關閉側邊欄')
+              setSidebarOpen(false)
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              console.log('遮罩層觸控結束，關閉側邊欄')
+              setSidebarOpen(false)
+            }}
+          />
+        )}
+        
         {/* 側邊欄 */}
         <aside className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
           <div className="sidebar-content">
@@ -151,7 +190,7 @@ function App() {
                       <li 
                         key={tool.id}
                         className={`tool-item ${selectedTool === tool.id ? 'active' : ''}`}
-                        onClick={() => setSelectedTool(tool.id)}
+                        onClick={() => handleToolSelect(tool.id)}
                       >
                         <span className="tool-icon">{tool.icon}</span>
                         <span className="tool-name">{tool.name}</span>
