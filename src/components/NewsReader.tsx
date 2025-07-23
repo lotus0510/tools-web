@@ -215,14 +215,11 @@ const NewsReader = () => {
     const query = isSearch && searchQuery.trim() ? searchQuery.trim() : ''
     const rssUrl = generateGoogleNewsURL(country, category, query)
     
-    // CORS 代理列表（按可用性排序 - codetabs 最穩定，thingproxy 簡單易用）
+    // CORS 代理列表（只保留可靠的代理）
     const corsProxies = [
-      'https://api.codetabs.com/v1/proxy?quest=',
-      'https://thingproxy.freeboard.io/fetch/',
       'https://api.allorigins.win/raw?url=',
       'https://corsproxy.io/?',
-      'https://cors-proxy.htmldriven.com/?url=',
-      'https://proxy.cors.sh/'
+      'https://cors-proxy.htmldriven.com/?url='
     ]
     
     for (const proxy of corsProxies) {
@@ -231,11 +228,9 @@ const NewsReader = () => {
         addLog(`Trying proxy: ${proxy}`)
         setLoadingProgress(`正在嘗試代理服務 ${corsProxies.indexOf(proxy) + 1}/${corsProxies.length}...`)
         
-        // 添加超時控制（優質代理給更長時間）
+        // 添加超時控制（統一5秒超時）
         const controller = new AbortController()
-        let timeout = 5000 // 默認5秒
-        if (proxy.includes('codetabs')) timeout = 8000 // codetabs 最穩定，8秒
-        else if (proxy.includes('thingproxy')) timeout = 6000 // thingproxy 簡單易用，6秒
+        const timeout = 5000 // 5秒超時
         const timeoutId = setTimeout(() => controller.abort(), timeout)
         
         const response = await fetch(proxyUrl, {
@@ -260,9 +255,9 @@ const NewsReader = () => {
         
         setArticles(articles)
         let proxyName = 'Unknown'
-        if (proxy.includes('codetabs')) proxyName = 'CodeTabs (最穩定)'
-        else if (proxy.includes('thingproxy')) proxyName = 'ThingProxy (簡單易用)'
-        else if (proxy.includes('allorigins')) proxyName = 'AllOrigins'
+        if (proxy.includes('allorigins')) proxyName = 'AllOrigins'
+        else if (proxy.includes('corsproxy.io')) proxyName = 'CorsProxy.io'
+        else if (proxy.includes('cors-proxy.htmldriven')) proxyName = 'HTMLDriven'
         else proxyName = proxy.replace('https://', '').split('/')[0]
         
         addLog(`✅ Successfully fetched ${articles.length} articles from Google RSS via ${proxyName}`)
@@ -270,16 +265,9 @@ const NewsReader = () => {
         return
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
-          const timeoutSeconds = proxy.includes('codetabs') ? 8 : proxy.includes('thingproxy') ? 6 : 5
-          addLog(`❌ Proxy ${proxy} timeout after ${timeoutSeconds} seconds`)
+          addLog(`❌ Proxy ${proxy} timeout after 5 seconds`)
         } else {
           addLog(`❌ Proxy ${proxy} failed: ${error}`)
-        }
-        // 如果是優質代理失敗，記錄更詳細的信息
-        if (proxy.includes('codetabs')) {
-          addLog(`⚠️ Primary proxy (CodeTabs) failed, trying alternatives...`)
-        } else if (proxy.includes('thingproxy')) {
-          addLog(`⚠️ Secondary proxy (ThingProxy) failed, trying remaining options...`)
         }
         continue
       }

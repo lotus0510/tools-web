@@ -8,6 +8,9 @@ import MemoryCardGame from './components/MemoryCardGame'
 import SnakeGame from './components/SnakeGame'
 import AIChatWindow from './components/AIChatWindow'
 import NewsReader from './components/NewsReader'
+import WeatherForecast from './components/WeatherForecast'
+import TextProcessor from './components/TextProcessor'
+import HttpTester from './components/HttpTester'
 
 // 工具類型定義
 interface Tool {
@@ -21,13 +24,16 @@ interface Tool {
 // 模擬工具數據
 const tools: Tool[] = [
   { id: 'base64-encoder', name: 'Base64 編碼', description: 'Base64 編碼和解碼', icon: '🔐', category: '編碼工具' },
-  { id: 'identity-generator', name: '隨機身份生成', description: '生成虛假身份信息用於測試', icon: '🎭', category: '生成器' },
+  { id: 'text-processor', name: '文本處理工具', description: '統計文本的行數、字數、字元數等資訊', icon: '📝', category: '編碼工具' },
   { id: 'morse-code-converter', name: '摩斯電碼轉換器', description: '文字與摩斯電碼互相轉換，支持音頻播放', icon: '📡', category: '編碼工具' },
+  { id: 'http-tester', name: 'HTTP/API 測試工具', description: '簡易的 GET/POST 請求發送器，觀察響應', icon: '🌐', category: '開發工具' },
+  { id: 'identity-generator', name: '隨機身份生成', description: '生成虛假身份信息用於測試', icon: '🎭', category: '生成器' },
   { id: 'number-guessing-game', name: '猜數字遊戲', description: '經典的猜數字遊戲，支持多種難度', icon: '🎯', category: '遊戲' },
   { id: 'memory-card-game', name: '記憶卡片遊戲', description: '翻牌配對記憶遊戲，訓練你的記憶力', icon: '🧠', category: '遊戲' },
   { id: 'snake-game', name: '貪吃蛇遊戲', description: '經典的貪吃蛇遊戲，支持鍵盤和觸控操作', icon: '🐍', category: '遊戲' },
   { id: 'ai-chat-window', name: 'AI 聊天助手', description: '與多種 AI 模型進行智能對話', icon: '🤖', category: 'AI 工具' },
   { id: 'news-reader', name: '熱門新聞查詢', description: '瀏覽最新熱門新聞，掌握時事動態', icon: '📰', category: '資訊工具' },
+  { id: 'weather-forecast', name: '天氣預報', description: '即時天氣資訊與未來五日預報', icon: '🌤️', category: '資訊工具' },
 ]
 
 function App() {
@@ -67,10 +73,14 @@ function App() {
       switch (selectedTool) {
         case 'base64-encoder':
           return <Base64Tool />
-        case 'identity-generator':
-          return <IdentityGenerator />
+        case 'text-processor':
+          return <TextProcessor />
         case 'morse-code-converter':
           return <MorseCodeConverter />
+        case 'http-tester':
+          return <HttpTester />
+        case 'identity-generator':
+          return <IdentityGenerator />
         case 'number-guessing-game':
           return <NumberGuessingGame />
         case 'memory-card-game':
@@ -81,6 +91,8 @@ function App() {
           return <AIChatWindow />
         case 'news-reader':
           return <NewsReader />
+        case 'weather-forecast':
+          return <WeatherForecast />
         default:
           return (
             <div className="tool-content">
